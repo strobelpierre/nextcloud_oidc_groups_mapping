@@ -35,6 +35,8 @@
                 <referencedClass name="OCA\UserOIDC\Event\AttributeMappedEvent"/>
             </errorLevel>
         </UndefinedClass>
+        <!-- #[\Override] requires PHP 8.3+ but we support 8.1+ -->
+        <MissingOverrideAttribute errorLevel="suppress"/>
         <!-- IEventListener template param not available in stubs -->
         <MissingTemplateParam>
             <errorLevel type="suppress">
