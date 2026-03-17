@@ -9,11 +9,39 @@
 [![Lint](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/lint.yml/badge.svg)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/lint.yml)
 [![Psalm](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/psalm.yml/badge.svg)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/psalm.yml)
 [![REUSE](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/reuse.yml/badge.svg)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/reuse.yml)
+[![Latest Release](https://img.shields.io/github/v/release/strobelpierre/nextcloud_oidc_groups_mapping?label=release)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/releases/latest)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 ![Nextcloud: 29-32](https://img.shields.io/badge/Nextcloud-29--32-blue?logo=nextcloud)
 ![PHP: 8.1+](https://img.shields.io/badge/PHP-8.1%2B-purple?logo=php)
+[![GitHub Stars](https://img.shields.io/github/stars/strobelpierre/nextcloud_oidc_groups_mapping)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping)
 
 A Nextcloud app that maps **multiple** OIDC token claims to Nextcloud groups via configurable rules. Works with any identity provider through the [user_oidc](https://github.com/nextcloud/user_oidc) app.
+
+![How it works](docs/flow-diagram.svg)
+
+## Features
+
+- **5 rule types** — direct, prefix, map, conditional, template
+- **Dot-notation claim paths** — access any nested token field
+- **Additive or replace mode** — merge with or override existing groups
+- **Admin UI + OCC commands** — configure via browser or CLI
+- **Test command** — validate rules against sample tokens before going live
+- **Zero config on user_oidc** — works with any provider setup
+
+## Table of contents
+
+- [The problem](#the-problem)
+- [Quick start](#quick-start)
+- [Rule types](#rule-types)
+- [Configuration](#configuration)
+- [Configuring user_oidc](#configuring-user_oidc)
+- [Admin settings](#admin-settings)
+- [OCC commands](#occ-commands)
+- [How it works](#how-it-works)
+- [Installation](#installation)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
 ## The problem
 
@@ -47,40 +75,6 @@ With `user_oidc` alone, you can map **one** claim to groups (`mappingGroups`). B
 - **Nextcloud** 29 -- 32
 - **PHP** 8.1+
 - **[user_oidc](https://github.com/nextcloud/user_oidc)** app installed and enabled
-
-## Configuring user_oidc
-
-This app works alongside user_oidc's built-in group mapping. Here's how they interact:
-
-### How it works
-
-When a user logs in via OIDC, user_oidc dispatches an event for group mapping. This app intercepts that event, applies your rules against the **full JWT token**, and produces groups.
-
-The `mappingGroups` setting in your user_oidc provider configuration controls what user_oidc extracts **before** this app runs:
-
-| `mappingGroups` setting | What happens |
-|:---|:---|
-| Set to a claim (e.g., `groups`) | user_oidc extracts groups from that claim first. This app then merges (additive) or replaces them. |
-| Empty or claim doesn't exist | No groups extracted by user_oidc. This app produces all groups from rules. |
-
-### Recommended setup
-
-**If your IdP token has a `groups` claim** and you want to combine it with advanced rules:
-
-1. In user_oidc provider settings, set `mappingGroups` to `groups` (or your claim name)
-2. Configure this app in `additive` mode — rule-produced groups merge with the native ones
-
-**If you want full control via rules only:**
-
-1. Leave `mappingGroups` at its default — it doesn't matter what it's set to
-2. Configure all your mapping rules in this app
-3. Use `replace` mode if you want only rule-produced groups
-
-### What you do NOT need to configure
-
-- No special user_oidc settings are required — the app works with any provider configuration
-- The app accesses the **full JWT token**, not just the claim pointed to by `mappingGroups`
-- Other attribute mappings (`mappingDisplayName`, `mappingEmail`, etc.) are unaffected
 
 ## Quick start
 
@@ -205,11 +199,45 @@ When a `map` rule encounters a value not in the lookup table:
 | `ignore` | Value is silently skipped |
 | `passthrough` | Original claim value is used as group name |
 
+## Configuring user_oidc
+
+This app works alongside user_oidc's built-in group mapping. Here's how they interact:
+
+### How user_oidc integration works
+
+When a user logs in via OIDC, user_oidc dispatches an event for group mapping. This app intercepts that event, applies your rules against the **full JWT token**, and produces groups.
+
+The `mappingGroups` setting in your user_oidc provider configuration controls what user_oidc extracts **before** this app runs:
+
+| `mappingGroups` setting | What happens |
+|:---|:---|
+| Set to a claim (e.g., `groups`) | user_oidc extracts groups from that claim first. This app then merges (additive) or replaces them. |
+| Empty or claim doesn't exist | No groups extracted by user_oidc. This app produces all groups from rules. |
+
+### Recommended setup
+
+**If your IdP token has a `groups` claim** and you want to combine it with advanced rules:
+
+1. In user_oidc provider settings, set `mappingGroups` to `groups` (or your claim name)
+2. Configure this app in `additive` mode — rule-produced groups merge with the native ones
+
+**If you want full control via rules only:**
+
+1. Leave `mappingGroups` at its default — it doesn't matter what it's set to
+2. Configure all your mapping rules in this app
+3. Use `replace` mode if you want only rule-produced groups
+
+### What you do NOT need to configure
+
+- No special user_oidc settings are required — the app works with any provider configuration
+- The app accesses the **full JWT token**, not just the claim pointed to by `mappingGroups`
+- Other attribute mappings (`mappingDisplayName`, `mappingEmail`, etc.) are unaffected
+
 ## Admin settings
 
 Configure rules through the Nextcloud admin panel under **Administration &rarr; OIDC Groups Mapping**.
 
-<!-- TODO: Add screenshots of the admin UI -->
+![Admin settings](docs/screenshots/admin-ui.svg)
 
 ## OCC commands
 
@@ -308,13 +336,7 @@ make appstore
 
 ## Contributing
 
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Ensure tests pass: `composer test:unit`
-4. Ensure code style: `composer cs:check`
-5. Submit a pull request
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

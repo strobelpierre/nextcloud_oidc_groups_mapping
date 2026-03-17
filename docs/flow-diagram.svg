@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" width="800" height="250" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- JWT Token box -->
+  <rect x="20" y="90" width="160" height="60" rx="8" fill="#fff" stroke="#0082c9" stroke-width="2" filter="url(#shadow)"/>
+  <text x="100" y="126" text-anchor="middle" font-size="15" font-weight="600" fill="#333">JWT Token</text>
+
+  <!-- Arrow 1 -->
+  <line x1="180" y1="120" x2="260" y2="120" stroke="#0082c9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Rules Engine box -->
+  <rect x="260" y="75" width="200" height="90" rx="8" fill="#0082c9" filter="url(#shadow)"/>
+  <text x="360" y="113" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">Rules Engine</text>
+  <text x="360" y="135" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.8)">5 rule types</text>
+
+  <!-- Arrow 2 -->
+  <line x1="460" y1="120" x2="540" y2="120" stroke="#0082c9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Nextcloud Groups box -->
+  <rect x="540" y="90" width="220" height="60" rx="8" fill="#fff" stroke="#0082c9" stroke-width="2" filter="url(#shadow)"/>
+  <text x="650" y="126" text-anchor="middle" font-size="15" font-weight="600" fill="#333">Nextcloud Groups</text>
+
+  <!-- Fan-out lines from Rules Engine -->
+  <line x1="360" y1="165" x2="120" y2="220" stroke="#ccc" stroke-width="1.5"/>
+  <line x1="360" y1="165" x2="240" y2="220" stroke="#ccc" stroke-width="1.5"/>
+  <line x1="360" y1="165" x2="360" y2="220" stroke="#ccc" stroke-width="1.5"/>
+  <line x1="360" y1="165" x2="480" y2="220" stroke="#ccc" stroke-width="1.5"/>
+  <line x1="360" y1="165" x2="600" y2="220" stroke="#ccc" stroke-width="1.5"/>
+
+  <!-- Rule type labels -->
+  <text x="120" y="240" text-anchor="middle" font-size="12" fill="#666" font-weight="500">direct</text>
+  <text x="240" y="240" text-anchor="middle" font-size="12" fill="#666" font-weight="500">prefix</text>
+  <text x="360" y="240" text-anchor="middle" font-size="12" fill="#666" font-weight="500">map</text>
+  <text x="480" y="240" text-anchor="middle" font-size="12" fill="#666" font-weight="500">conditional</text>
+  <text x="600" y="240" text-anchor="middle" font-size="12" fill="#666" font-weight="500">template</text>
+
+  <!-- Arrowhead marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0082c9"/>
+    </marker>
+  </defs>
+</svg>

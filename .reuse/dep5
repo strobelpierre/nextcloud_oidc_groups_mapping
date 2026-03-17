@@ -14,6 +14,14 @@ Files: dev/*
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
 
-Files: .editorconfig .gitignore .nextcloudignore Makefile docs/screenshots/.gitkeep
+Files: .editorconfig .gitignore .nextcloudignore Makefile
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
+
+Files: CONTRIBUTING.md SECURITY.md .github/ISSUE_TEMPLATE/* .github/PULL_REQUEST_TEMPLATE.md
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: AGPL-3.0-or-later
+
+Files: docs/flow-diagram.svg docs/screenshots/admin-ui.svg
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: CC-BY-SA-4.0

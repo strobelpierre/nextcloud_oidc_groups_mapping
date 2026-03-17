@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" width="700" height="400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-1%" y="-1%" width="102%" height="102%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="400" rx="8" fill="#f5f5f5"/>
+
+  <!-- Sidebar simulation -->
+  <rect width="48" height="400" rx="8 0 0 8" fill="#0082c9"/>
+  <circle cx="24" cy="24" r="10" fill="rgba(255,255,255,0.3)"/>
+  <rect x="14" y="50" width="20" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+  <rect x="14" y="58" width="20" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+  <rect x="14" y="66" width="20" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+
+  <!-- Header bar -->
+  <rect x="48" width="652" height="50" fill="#fff" filter="url(#shadow)"/>
+  <text x="72" y="31" font-size="16" font-weight="600" fill="#333">Administration</text>
+  <text x="196" y="31" font-size="14" fill="#888">/</text>
+  <text x="212" y="31" font-size="16" font-weight="600" fill="#0082c9">OIDC Groups Mapping</text>
+
+  <!-- Content area -->
+  <rect x="72" y="70" width="604" height="310" rx="6" fill="#fff" filter="url(#shadow)"/>
+
+  <!-- Mode and Rules info -->
+  <text x="96" y="100" font-size="13" fill="#888">Mode</text>
+  <rect x="96" y="108" width="100" height="28" rx="4" fill="#e8f4fd" stroke="#0082c9" stroke-width="1"/>
+  <text x="146" y="127" text-anchor="middle" font-size="13" font-weight="500" fill="#0082c9">additive</text>
+
+  <text x="220" y="100" font-size="13" fill="#888">Rules</text>
+  <rect x="220" y="108" width="40" height="28" rx="4" fill="#e8f4fd" stroke="#0082c9" stroke-width="1"/>
+  <text x="240" y="127" text-anchor="middle" font-size="14" font-weight="600" fill="#0082c9">4</text>
+
+  <!-- JSON textarea -->
+  <text x="96" y="164" font-size="13" font-weight="500" fill="#555">Rules configuration (JSON)</text>
+  <rect x="96" y="172" width="556" height="150" rx="4" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+
+  <!-- JSON content (monospace) -->
+  <text font-family="'SF Mono', 'Fira Code', monospace" font-size="11.5" fill="#555">
+    <tspan x="110" y="192">{</tspan>
+    <tspan x="110" y="208">  "version": 1,</tspan>
+    <tspan x="110" y="224">  "mode": "additive",</tspan>
+    <tspan x="110" y="240">  "rules": [</tspan>
+    <tspan x="110" y="256">    {"id": "departments", "type": "direct", ...},</tspan>
+    <tspan x="110" y="272">    {"id": "user-roles", "type": "prefix", ...},</tspan>
+    <tspan x="110" y="288">    {"id": "org-mapping", "type": "map", ...},</tspan>
+    <tspan x="110" y="304">    {"id": "internal-flag", "type": "conditional", ...}</tspan>
+  </text>
+
+  <!-- Save button -->
+  <rect x="96" y="340" width="80" height="32" rx="16" fill="#0082c9" filter="url(#shadow)"/>
+  <text x="136" y="361" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Save</text>
+
+  <!-- Validation status -->
+  <text x="192" y="361" font-size="12" fill="#2d8a56">Valid JSON</text>
+  <circle cx="184" cy="357" r="4" fill="#2d8a56"/>
+</svg>
