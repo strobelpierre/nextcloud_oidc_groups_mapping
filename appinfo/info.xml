@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>oidc_groups_mapping</id>
+    <name>OIDC Groups Mapping</name>
+    <summary>Map multiple OIDC token claims to Nextcloud groups</summary>
+    <description><![CDATA[
+This app extends the user_oidc app by listening to the AttributeMappedEvent
+to transform multiple OIDC token claims into Nextcloud groups using configurable rules.
+
+Supports direct mapping, prefix, map tables, conditional rules, and templates.
+
+**Requires the user_oidc app to be installed and enabled.**
+    ]]></description>
+    <version>1.0.0</version>
+    <licence>agpl</licence>
+    <author>OIDC Groups Mapping Contributors</author>
+    <namespace>OidcGroupsMapping</namespace>
+    <category>integration</category>
+    <website>https://github.com/strobelpierre/oidc_groups_mapping</website>
+    <bugs>https://github.com/strobelpierre/oidc_groups_mapping/issues</bugs>
+    <repository type="git">https://github.com/strobelpierre/oidc_groups_mapping</repository>
+    <dependencies>
+        <nextcloud min-version="29" max-version="32"/>
+        <php min-version="8.1"/>
+    </dependencies>
+    <types>
+        <authentication/>
+    </types>
+    <settings>
+        <admin>OCA\OidcGroupsMapping\Settings\AdminSettings</admin>
+        <admin-section>OCA\OidcGroupsMapping\Settings\Section</admin-section>
+    </settings>
+    <commands>
+        <command>OCA\OidcGroupsMapping\Command\ListRules</command>
+        <command>OCA\OidcGroupsMapping\Command\SetRules</command>
+        <command>OCA\OidcGroupsMapping\Command\TestMapping</command>
+    </commands>
+</info>

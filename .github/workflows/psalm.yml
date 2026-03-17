@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: Psalm
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  psalm:
+    runs-on: ubuntu-latest
+    name: Psalm static analysis
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run Psalm
+        run: composer psalm

@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: REUSE
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  reuse:
+    runs-on: ubuntu-latest
+    name: REUSE compliance
+    steps:
+      - uses: actions/checkout@v4
+      - name: REUSE compliance check
+        uses: fsfe/reuse-action@v4

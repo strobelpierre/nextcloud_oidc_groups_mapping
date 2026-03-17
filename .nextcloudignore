@@ -1,0 +1,15 @@
+.git
+.github
+tests
+dev
+vendor
+vendor-bin
+.php-cs-fixer.dist.php
+.php-cs-fixer.cache
+.editorconfig
+.gitignore
+.nextcloudignore
+.reuse
+LICENSES
+psalm.xml
+Makefile

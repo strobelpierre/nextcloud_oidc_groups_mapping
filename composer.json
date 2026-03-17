@@ -1,0 +1,36 @@
+{
+    "name": "nextcloud/oidc_groups_mapping",
+    "description": "Map multiple OIDC token claims to Nextcloud groups",
+    "license": "AGPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "OCA\\OidcGroupsMapping\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OCA\\OidcGroupsMapping\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
+    },
+    "scripts": {
+        "test:unit": "phpunit -c tests/phpunit.xml",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "psalm": "psalm --no-cache",
+        "lint": "find . -name '*.php' ! -path './vendor/*' ! -path './vendor-bin/*' ! -path './tests/stubs/*' -exec php -l {} \\;"
+    },
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "nextcloud/ocp": "dev-stable29",
+        "phpunit/phpunit": "^10 || ^11",
+        "vimeo/psalm": "^5 || ^6"
+    }
+}

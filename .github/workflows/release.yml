@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build tarball
+        run: make appstore
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/oidc_groups_mapping.tar.gz

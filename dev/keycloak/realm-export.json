@@ -1,0 +1,160 @@
+{
+  "id": "nextcloudci",
+  "realm": "nextcloudci",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "users": [
+    {
+      "username": "testuser1",
+      "email": "test1@example.com",
+      "firstName": "Alice",
+      "lastName": "Test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "attributes": {
+        "department": ["IT"],
+        "roles": ["admin", "editor"],
+        "organization": ["Staff"],
+        "is_external": ["false"]
+      },
+      "groups": ["/staff", "/nextcloud-users"]
+    },
+    {
+      "username": "testuser2",
+      "email": "test2@example.com",
+      "firstName": "Bob",
+      "lastName": "External",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "attributes": {
+        "department": ["Legal"],
+        "roles": ["viewer"],
+        "organization": ["Partners"],
+        "is_external": ["true"]
+      },
+      "groups": ["/external", "/nextcloud-users"]
+    },
+    {
+      "username": "testuser3",
+      "email": "test3@example.com",
+      "firstName": "Charlie",
+      "lastName": "Multi",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "attributes": {
+        "department": ["HR"],
+        "roles": ["admin", "editor", "viewer"],
+        "organization": ["Staff"],
+        "is_external": ["false"]
+      },
+      "groups": ["/staff", "/management", "/nextcloud-users"]
+    }
+  ],
+  "groups": [
+    { "name": "staff", "path": "/staff" },
+    { "name": "external", "path": "/external" },
+    { "name": "management", "path": "/management" },
+    { "name": "nextcloud-users", "path": "/nextcloud-users" }
+  ],
+  "clients": [
+    {
+      "clientId": "nextcloud",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "ff75b7c7-20f9-460b-b27c-16bd5d9b4cd0",
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "department",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "department",
+            "claim.name": "department",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "roles",
+            "claim.name": "roles",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "true",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "organization",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "organization",
+            "claim.name": "organization",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "is_external",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "is_external",
+            "claim.name": "is_external",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "config": {
+            "full.path": "false",
+            "claim.name": "groups",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>./Unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">../lib</directory>
+        </include>
+    </source>
+</phpunit>

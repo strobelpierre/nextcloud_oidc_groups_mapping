@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: oidc_groups_mapping
+Upstream-Contact: OIDC Groups Mapping Contributors
+
+Files: composer.json composer.lock package.json package-lock.json
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: AGPL-3.0-or-later
+
+Files: tests/stubs/*
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: AGPL-3.0-or-later
+
+Files: dev/*
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: AGPL-3.0-or-later

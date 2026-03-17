@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<psalm errorLevel="4"
+       resolveFromConfigFile="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="https://getpsalm.org/schema/config"
+       xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd">
+    <projectFiles>
+        <directory name="lib"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+    <extraFiles>
+        <directory name="vendor"/>
+    </extraFiles>
+    <issueHandlers>
+        <!-- Classes/methods instantiated by Nextcloud DI container, not directly called -->
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="lib"/>
+            </errorLevel>
+        </UnusedClass>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="lib"/>
+            </errorLevel>
+        </PossiblyUnusedMethod>
+        <!-- user_oidc classes not available at analysis time -->
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="OCA\UserOIDC\Event\AttributeMappedEvent"/>
+            </errorLevel>
+        </UndefinedClass>
+        <!-- IEventListener template param not available in stubs -->
+        <MissingTemplateParam>
+            <errorLevel type="suppress">
+                <directory name="lib/Listener"/>
+            </errorLevel>
+        </MissingTemplateParam>
+    </issueHandlers>
+</psalm>

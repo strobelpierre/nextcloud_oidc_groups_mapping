@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  php-syntax:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+    name: PHP ${{ matrix.php }} syntax check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: PHP syntax check
+        run: find lib/ -name '*.php' -exec php -l {} \;
+
+  cs-check:
+    runs-on: ubuntu-latest
+    name: php-cs-fixer
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --prefer-dist
+          mkdir -p vendor-bin/cs-fixer
+          cd vendor-bin/cs-fixer
+          composer require --no-interaction nextcloud/coding-standard
+
+      - name: Run php-cs-fixer
+        run: vendor-bin/cs-fixer/vendor/bin/php-cs-fixer fix --dry-run --diff
