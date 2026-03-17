@@ -17,42 +17,42 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ListRules extends Command {
 
-    public function __construct(
-        private IAppConfig $appConfig,
-    ) {
-        parent::__construct();
-    }
+	public function __construct(
+		private IAppConfig $appConfig,
+	) {
+		parent::__construct();
+	}
 
-    protected function configure(): void {
-        $this->setName('oidc-groups:list')
-            ->setDescription('List all configured OIDC group mapping rules');
-    }
+	protected function configure(): void {
+		$this->setName('oidc-groups:list')
+			->setDescription('List all configured OIDC group mapping rules');
+	}
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
-        $json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
-        $collection = RuleCollection::fromJson($json);
+	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
+		$collection = RuleCollection::fromJson($json);
 
-        $rules = $collection->getRules();
-        if (count($rules) === 0) {
-            $output->writeln('No rules configured.');
-            return 0;
-        }
+		$rules = $collection->getRules();
+		if (count($rules) === 0) {
+			$output->writeln('No rules configured.');
+			return 0;
+		}
 
-        $output->writeln('Mode: ' . $collection->getMode());
-        $output->writeln('');
+		$output->writeln('Mode: ' . $collection->getMode());
+		$output->writeln('');
 
-        foreach ($rules as $rule) {
-            $status = $rule->isEnabled() ? 'enabled' : 'disabled';
-            $output->writeln(sprintf(
-                '  [%s] %s (%s) — claim: %s — config: %s',
-                $status,
-                $rule->getId(),
-                $rule->getType(),
-                $rule->getClaimPath(),
-                json_encode($rule->getConfig()),
-            ));
-        }
+		foreach ($rules as $rule) {
+			$status = $rule->isEnabled() ? 'enabled' : 'disabled';
+			$output->writeln(sprintf(
+				'  [%s] %s (%s) — claim: %s — config: %s',
+				$status,
+				$rule->getId(),
+				$rule->getType(),
+				$rule->getClaimPath(),
+				json_encode($rule->getConfig()),
+			));
+		}
 
-        return 0;
-    }
+		return 0;
+	}
 }

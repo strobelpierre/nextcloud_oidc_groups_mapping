@@ -26,7 +26,7 @@ jobs:
           coverage: none
 
       - name: PHP syntax check
-        run: find lib/ -name '*.php' -exec php -l {} \;
+        run: find . -name '*.php' ! -path './vendor/*' ! -path './vendor-bin/*' ! -path './tests/stubs/*' -exec php -l {} \;
 
   cs-check:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer install --no-interaction --prefer-dist
+          composer update --no-interaction --prefer-dist
           mkdir -p vendor-bin/cs-fixer
           cd vendor-bin/cs-fixer
           composer require --no-interaction nextcloud/coding-standard

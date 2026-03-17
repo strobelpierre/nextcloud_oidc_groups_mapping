@@ -14,24 +14,24 @@ use OCP\Settings\IIconSection;
 
 class Section implements IIconSection {
 
-    public function __construct(
-        private IURLGenerator $urlGenerator,
-    ) {
-    }
+	public function __construct(
+		private IURLGenerator $urlGenerator,
+	) {
+	}
 
-    public function getID(): string {
-        return 'oidc_groups_mapping';
-    }
+	public function getID(): string {
+		return 'oidc_groups_mapping';
+	}
 
-    public function getName(): string {
-        return 'OIDC Groups Mapping';
-    }
+	public function getName(): string {
+		return 'OIDC Groups Mapping';
+	}
 
-    public function getPriority(): int {
-        return 80;
-    }
+	public function getPriority(): int {
+		return 80;
+	}
 
-    public function getIcon(): string {
-        return $this->urlGenerator->imagePath('core', 'actions/group.svg');
-    }
+	public function getIcon(): string {
+		return $this->urlGenerator->imagePath('core', 'actions/group.svg');
+	}
 }

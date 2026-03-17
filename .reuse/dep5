@@ -13,3 +13,7 @@ License: AGPL-3.0-or-later
 Files: dev/*
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
+
+Files: .editorconfig .gitignore .nextcloudignore Makefile docs/screenshots/.gitkeep
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: AGPL-3.0-or-later

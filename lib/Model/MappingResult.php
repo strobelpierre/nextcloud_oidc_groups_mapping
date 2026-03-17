@@ -11,28 +11,28 @@ namespace OCA\OidcGroupsMapping\Model;
 
 class MappingResult {
 
-    /**
-     * @param string[] $groups
-     */
-    public function __construct(
-        private string $ruleId,
-        private array $groups,
-        private bool $matched,
-    ) {
-    }
+	/**
+	 * @param string[] $groups
+	 */
+	public function __construct(
+		private string $ruleId,
+		private array $groups,
+		private bool $matched,
+	) {
+	}
 
-    public function getRuleId(): string {
-        return $this->ruleId;
-    }
+	public function getRuleId(): string {
+		return $this->ruleId;
+	}
 
-    /**
-     * @return string[]
-     */
-    public function getGroups(): array {
-        return $this->groups;
-    }
+	/**
+	 * @return string[]
+	 */
+	public function getGroups(): array {
+		return $this->groups;
+	}
 
-    public function isMatched(): bool {
-        return $this->matched;
-    }
+	public function isMatched(): bool {
+		return $this->matched;
+	}
 }

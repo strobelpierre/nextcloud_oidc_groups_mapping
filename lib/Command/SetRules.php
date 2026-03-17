@@ -18,28 +18,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SetRules extends Command {
 
-    public function __construct(
-        private IAppConfig $appConfig,
-    ) {
-        parent::__construct();
-    }
+	public function __construct(
+		private IAppConfig $appConfig,
+	) {
+		parent::__construct();
+	}
 
-    protected function configure(): void {
-        $this->setName('oidc-groups:set')
-            ->setDescription('Set OIDC group mapping rules from JSON')
-            ->addArgument('json', InputArgument::REQUIRED, 'JSON configuration string');
-    }
+	protected function configure(): void {
+		$this->setName('oidc-groups:set')
+			->setDescription('Set OIDC group mapping rules from JSON')
+			->addArgument('json', InputArgument::REQUIRED, 'JSON configuration string');
+	}
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
-        $json = $input->getArgument('json');
+	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$json = $input->getArgument('json');
 
-        // Validate by parsing
-        $collection = RuleCollection::fromJson($json);
-        $rules = $collection->getRules();
+		// Validate by parsing
+		$collection = RuleCollection::fromJson($json);
+		$rules = $collection->getRules();
 
-        $this->appConfig->setValueString('oidc_groups_mapping', 'mapping_rules', $collection->toJson());
+		$this->appConfig->setValueString('oidc_groups_mapping', 'mapping_rules', $collection->toJson());
 
-        $output->writeln(sprintf('Saved %d rules (mode: %s).', count($rules), $collection->getMode()));
-        return 0;
-    }
+		$output->writeln(sprintf('Saved %d rules (mode: %s).', count($rules), $collection->getMode()));
+		return 0;
+	}
 }

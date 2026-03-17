@@ -17,48 +17,48 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestMapping extends Command {
 
-    public function __construct(
-        private MappingService $mappingService,
-    ) {
-        parent::__construct();
-    }
+	public function __construct(
+		private MappingService $mappingService,
+	) {
+		parent::__construct();
+	}
 
-    protected function configure(): void {
-        $this->setName('oidc-groups:test')
-            ->setDescription('Test mapping rules against a sample token')
-            ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'JSON token claims')
-            ->addOption('existing', 'e', InputOption::VALUE_OPTIONAL, 'JSON array of existing groups', '[]');
-    }
+	protected function configure(): void {
+		$this->setName('oidc-groups:test')
+			->setDescription('Test mapping rules against a sample token')
+			->addOption('token', 't', InputOption::VALUE_REQUIRED, 'JSON token claims')
+			->addOption('existing', 'e', InputOption::VALUE_OPTIONAL, 'JSON array of existing groups', '[]');
+	}
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
-        $tokenJson = $input->getOption('token');
-        if ($tokenJson === null) {
-            $output->writeln('<error>--token is required</error>');
-            return 1;
-        }
+	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$tokenJson = $input->getOption('token');
+		if ($tokenJson === null) {
+			$output->writeln('<error>--token is required</error>');
+			return 1;
+		}
 
-        $claims = json_decode($tokenJson);
-        if (!is_object($claims)) {
-            $output->writeln('<error>Invalid JSON token</error>');
-            return 1;
-        }
+		$claims = json_decode($tokenJson);
+		if (!is_object($claims)) {
+			$output->writeln('<error>Invalid JSON token</error>');
+			return 1;
+		}
 
-        $existing = json_decode($input->getOption('existing') ?? '[]', true);
-        if (!is_array($existing)) {
-            $existing = [];
-        }
+		$existing = json_decode($input->getOption('existing') ?? '[]', true);
+		if (!is_array($existing)) {
+			$existing = [];
+		}
 
-        $result = $this->mappingService->process($claims, $existing);
+		$result = $this->mappingService->process($claims, $existing);
 
-        if ($result === null) {
-            $output->writeln('No rules matched. Groups unchanged.');
-            return 0;
-        }
+		if ($result === null) {
+			$output->writeln('No rules matched. Groups unchanged.');
+			return 0;
+		}
 
-        $output->writeln('Resulting groups:');
-        foreach ($result as $group) {
-            $output->writeln('  - ' . $group);
-        }
-        return 0;
-    }
+		$output->writeln('Resulting groups:');
+		foreach ($result as $group) {
+			$output->writeln('  - ' . $group);
+		}
+		return 0;
+	}
 }

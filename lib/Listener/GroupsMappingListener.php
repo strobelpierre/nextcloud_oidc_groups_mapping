@@ -17,43 +17,43 @@ use Psr\Log\LoggerInterface;
 
 class GroupsMappingListener implements IEventListener {
 
-    public function __construct(
-        private MappingService $mappingService,
-        private LoggerInterface $logger,
-    ) {
-    }
+	public function __construct(
+		private MappingService $mappingService,
+		private LoggerInterface $logger,
+	) {
+	}
 
-    public function handle(Event $event): void {
-        if (!($event instanceof AttributeMappedEvent)) {
-            return;
-        }
+	public function handle(Event $event): void {
+		if (!($event instanceof AttributeMappedEvent)) {
+			return;
+		}
 
-        if ($event->getAttribute() !== 'mappingGroups') {
-            return;
-        }
+		if ($event->getAttribute() !== 'mappingGroups') {
+			return;
+		}
 
-        $existingValue = $event->getValue();
-        $existingGroups = [];
-        if ($existingValue !== null && $existingValue !== '') {
-            $decoded = json_decode($existingValue, true);
-            if (is_array($decoded)) {
-                $existingGroups = $decoded;
-            }
-        }
+		$existingValue = $event->getValue();
+		$existingGroups = [];
+		if ($existingValue !== null && $existingValue !== '') {
+			$decoded = json_decode($existingValue, true);
+			if (is_array($decoded)) {
+				$existingGroups = $decoded;
+			}
+		}
 
-        $claims = $event->getClaims();
-        $result = $this->mappingService->process($claims, $existingGroups);
+		$claims = $event->getClaims();
+		$result = $this->mappingService->process($claims, $existingGroups);
 
-        if ($result === null) {
-            // No rules matched — don't touch the event
-            return;
-        }
+		if ($result === null) {
+			// No rules matched — don't touch the event
+			return;
+		}
 
-        $this->logger->debug('OIDC groups mapping produced {count} groups', [
-            'count' => count($result),
-        ]);
+		$this->logger->debug('OIDC groups mapping produced {count} groups', [
+			'count' => count($result),
+		]);
 
-        $event->setValue(json_encode(array_values($result)));
-        $event->stopPropagation();
-    }
+		$event->setValue(json_encode(array_values($result)));
+		$event->stopPropagation();
+	}
 }

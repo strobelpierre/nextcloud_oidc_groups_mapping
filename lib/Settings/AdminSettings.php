@@ -16,27 +16,27 @@ use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
 
-    public function __construct(
-        private IAppConfig $appConfig,
-    ) {
-    }
+	public function __construct(
+		private IAppConfig $appConfig,
+	) {
+	}
 
-    public function getForm(): TemplateResponse {
-        $json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
-        $collection = RuleCollection::fromJson($json);
+	public function getForm(): TemplateResponse {
+		$json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
+		$collection = RuleCollection::fromJson($json);
 
-        return new TemplateResponse('oidc_groups_mapping', 'admin', [
-            'rules_json' => $collection->toJson(),
-            'mode' => $collection->getMode(),
-            'rules_count' => count($collection->getRules()),
-        ]);
-    }
+		return new TemplateResponse('oidc_groups_mapping', 'admin', [
+			'rules_json' => $collection->toJson(),
+			'mode' => $collection->getMode(),
+			'rules_count' => count($collection->getRules()),
+		]);
+	}
 
-    public function getSection(): string {
-        return 'oidc_groups_mapping';
-    }
+	public function getSection(): string {
+		return 'oidc_groups_mapping';
+	}
 
-    public function getPriority(): int {
-        return 50;
-    }
+	public function getPriority(): int {
+		return 50;
+	}
 }
