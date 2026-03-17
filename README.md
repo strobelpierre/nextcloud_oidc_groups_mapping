@@ -48,6 +48,40 @@ With `user_oidc` alone, you can map **one** claim to groups (`mappingGroups`). B
 - **PHP** 8.1+
 - **[user_oidc](https://github.com/nextcloud/user_oidc)** app installed and enabled
 
+## Configuring user_oidc
+
+This app works alongside user_oidc's built-in group mapping. Here's how they interact:
+
+### How it works
+
+When a user logs in via OIDC, user_oidc dispatches an event for group mapping. This app intercepts that event, applies your rules against the **full JWT token**, and produces groups.
+
+The `mappingGroups` setting in your user_oidc provider configuration controls what user_oidc extracts **before** this app runs:
+
+| `mappingGroups` setting | What happens |
+|:---|:---|
+| Set to a claim (e.g., `groups`) | user_oidc extracts groups from that claim first. This app then merges (additive) or replaces them. |
+| Empty or claim doesn't exist | No groups extracted by user_oidc. This app produces all groups from rules. |
+
+### Recommended setup
+
+**If your IdP token has a `groups` claim** and you want to combine it with advanced rules:
+
+1. In user_oidc provider settings, set `mappingGroups` to `groups` (or your claim name)
+2. Configure this app in `additive` mode — rule-produced groups merge with the native ones
+
+**If you want full control via rules only:**
+
+1. Leave `mappingGroups` at its default — it doesn't matter what it's set to
+2. Configure all your mapping rules in this app
+3. Use `replace` mode if you want only rule-produced groups
+
+### What you do NOT need to configure
+
+- No special user_oidc settings are required — the app works with any provider configuration
+- The app accesses the **full JWT token**, not just the claim pointed to by `mappingGroups`
+- Other attribute mappings (`mappingDisplayName`, `mappingEmail`, etc.) are unaffected
+
 ## Quick start
 
 ```bash
