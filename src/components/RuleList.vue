@@ -5,7 +5,12 @@
 
 <template>
 	<div class="rule-list">
-		<RuleCard v-for="rule in rules" :key="rule.id" :rule="rule" />
+		<RuleCard v-for="(rule, index) in rules"
+			:key="rule.id"
+			:rule="rule"
+			@toggle="$emit('toggle', index)"
+			@delete="$emit('delete', index)"
+			@edit="$emit('edit', index)" />
 	</div>
 </template>
 

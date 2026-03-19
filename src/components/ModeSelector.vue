@@ -5,7 +5,11 @@
 
 <template>
 	<div class="mode-selector">
-		<span class="badge badge-mode">{{ mode }}</span>
+		<label class="mode-label" for="ogm-mode">Mode:</label>
+		<select id="ogm-mode" :value="mode" class="mode-select" @change="$emit('update:mode', $event.target.value)">
+			<option value="additive">additive</option>
+			<option value="replace">replace</option>
+		</select>
 		<span class="badge badge-count">{{ enabledCount }} / {{ rulesCount }} rules active</span>
 	</div>
 </template>
@@ -38,6 +42,20 @@ export default {
 	margin-bottom: 16px;
 }
 
+.mode-label {
+	font-weight: 600;
+	font-size: 14px;
+}
+
+.mode-select {
+	padding: 4px 8px;
+	border: 1px solid var(--color-border, #ededed);
+	border-radius: var(--border-radius, 3px);
+	font-size: 14px;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+
 .badge {
 	display: inline-block;
 	padding: 2px 10px;
@@ -45,11 +63,6 @@ export default {
 	font-size: 12px;
 	font-weight: 600;
 	text-transform: uppercase;
-}
-
-.badge-mode {
-	background-color: var(--color-primary-element-light, #e8f0fe);
-	color: var(--color-primary-element, #0082c9);
 }
 
 .badge-count {

@@ -9,6 +9,17 @@
 			<span class="rule-type badge">{{ rule.type }}</span>
 			<span class="rule-claim">{{ rule.claimPath }}</span>
 			<span v-if="!rule.enabled" class="badge badge-disabled">disabled</span>
+			<div class="rule-actions">
+				<button class="action-btn" :title="rule.enabled ? 'Disable' : 'Enable'" @click="$emit('toggle')">
+					{{ rule.enabled ? 'Disable' : 'Enable' }}
+				</button>
+				<button class="action-btn" title="Edit" @click="$emit('edit')">
+					Edit
+				</button>
+				<button class="action-btn action-btn--danger" title="Delete" @click="$emit('delete')">
+					Delete
+				</button>
+			</div>
 		</div>
 		<div class="rule-summary">
 			{{ summary }}
@@ -34,7 +45,7 @@ export default {
 			case 'prefix':
 				return `Adds prefix '${config.prefix || ''}' to claim values`
 			case 'map': {
-				const mappings = config.mappings || {}
+				const mappings = config.values || {}
 				const count = Object.keys(mappings).length
 				const policy = config.unmappedPolicy || 'ignore'
 				return `${count} value mapping${count !== 1 ? 's' : ''} (unmapped: ${policy})`
@@ -98,6 +109,35 @@ export default {
 .badge-disabled {
 	background-color: var(--color-background-dark, #ededed);
 	color: var(--color-text-maxcontrast, #999);
+}
+
+.rule-actions {
+	margin-left: auto;
+	display: flex;
+	gap: 6px;
+}
+
+.action-btn {
+	padding: 4px 10px;
+	font-size: 12px;
+	border: 1px solid var(--color-border, #ededed);
+	border-radius: var(--border-radius, 3px);
+	background: var(--color-main-background, #fff);
+	cursor: pointer;
+}
+
+.action-btn:hover {
+	background: var(--color-background-hover, #f5f5f5);
+}
+
+.action-btn--danger {
+	color: var(--color-error, #e9322d);
+	border-color: var(--color-error, #e9322d);
+}
+
+.action-btn--danger:hover {
+	background: var(--color-error, #e9322d);
+	color: #fff;
 }
 
 .rule-summary {
