@@ -42,17 +42,17 @@ jobs:
           echo "${{ secrets.APP_PRIVATE_KEY }}" > $HOME/.nextcloud/certificates/${APP_NAME}.key
           curl -sL "https://github.com/nextcloud/app-certificate-requests/raw/master/${APP_NAME}/${APP_NAME}.crt" \
             -o $HOME/.nextcloud/certificates/${APP_NAME}.crt
-          tar xzf build/artifacts/${APP_NAME}.tar.gz -C nextcloud/apps/
+          tar xzf build/${APP_NAME}.tar.gz -C nextcloud/apps/
           php nextcloud/occ integrity:sign-app \
             --privateKey=$HOME/.nextcloud/certificates/${APP_NAME}.key \
             --certificate=$HOME/.nextcloud/certificates/${APP_NAME}.crt \
             --path=nextcloud/apps/${APP_NAME}
-          cd nextcloud/apps && tar czf ../../build/artifacts/${APP_NAME}.tar.gz ${APP_NAME}
+          cd nextcloud/apps && tar czf ../../build/${APP_NAME}.tar.gz ${APP_NAME}
 
       - name: Attach signed tarball to release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/artifacts/${{ env.APP_NAME }}.tar.gz
+          files: build/${{ env.APP_NAME }}.tar.gz
 
       - name: Publish to Nextcloud App Store
         run: |
