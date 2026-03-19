@@ -4,8 +4,11 @@
   -->
 
 <template>
-	<div class="rule-card" :class="{ disabled: !rule.enabled }">
+	<div class="rule-card"
+		:class="{ disabled: !rule.enabled, dragging: dragging, 'drag-over': dragOver }"
+		draggable="true">
 		<div class="rule-header">
+			<span class="drag-handle" title="Drag to reorder">&#9776;</span>
 			<span class="rule-type badge">{{ rule.type }}</span>
 			<span class="rule-claim">{{ rule.claimPath }}</span>
 			<span v-if="!rule.enabled" class="badge badge-disabled">disabled</span>
@@ -34,6 +37,18 @@ export default {
 		rule: {
 			type: Object,
 			required: true,
+		},
+		index: {
+			type: Number,
+			default: 0,
+		},
+		dragging: {
+			type: Boolean,
+			default: false,
+		},
+		dragOver: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	computed: {
@@ -72,11 +87,27 @@ export default {
 	border-radius: var(--border-radius-large, 10px);
 	padding: 16px;
 	background-color: var(--color-main-background, #fff);
-	transition: opacity 0.2s ease;
+	transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+	cursor: grab;
+}
+
+.rule-card:active {
+	cursor: grabbing;
 }
 
 .rule-card.disabled {
 	opacity: 0.6;
+}
+
+.rule-card.dragging {
+	opacity: 0.4;
+	transform: scale(0.98);
+}
+
+.rule-card.drag-over {
+	border-color: var(--color-primary-element, #0082c9);
+	border-style: dashed;
+	border-width: 2px;
 }
 
 .rule-header {
@@ -84,6 +115,17 @@ export default {
 	align-items: center;
 	gap: 8px;
 	margin-bottom: 8px;
+}
+
+.drag-handle {
+	cursor: grab;
+	color: var(--color-text-maxcontrast, #999);
+	font-size: 16px;
+	user-select: none;
+}
+
+.drag-handle:active {
+	cursor: grabbing;
 }
 
 .rule-type {
@@ -143,5 +185,6 @@ export default {
 .rule-summary {
 	font-size: 14px;
 	color: var(--color-main-text, #222);
+	padding-left: 24px;
 }
 </style>

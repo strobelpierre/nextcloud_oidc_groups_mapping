@@ -8,15 +8,16 @@
 		<h2>OIDC Groups Mapping</h2>
 
 		<div class="tab-bar">
-			<button :class="['tab-btn', { active: tab === 'visual' }]" @click="tab = 'visual'">
+			<button :class="['tab-btn', { active: tab === 'visual' }]" @click="switchTab('visual')">
 				Visual editor
 			</button>
-			<button :class="['tab-btn', { active: tab === 'json' }]" @click="tab = 'json'">
+			<button :class="['tab-btn', { active: tab === 'json' }]" @click="switchTab('json')">
 				JSON
 			</button>
-			<button :class="['tab-btn', { active: tab === 'simulator' }]" @click="tab = 'simulator'">
+			<button :class="['tab-btn', { active: tab === 'simulator' }]" @click="switchTab('simulator')">
 				Simulator
 			</button>
+			<span v-if="dirty" class="unsaved-badge">unsaved changes</span>
 		</div>
 
 		<!-- Visual editor tab -->
@@ -29,7 +30,8 @@
 			<RuleList :rules="rules"
 				@toggle="onToggleRule"
 				@delete="onDeleteRule"
-				@edit="onEditRule" />
+				@edit="onEditRule"
+				@reorder="onReorder" />
 
 			<p v-if="rules.length === 0 && editingIndex === null" class="empty-state">
 				No mapping rules configured yet.
@@ -64,6 +66,24 @@
 
 		<!-- Simulator tab -->
 		<ClaimSimulator v-if="tab === 'simulator'" />
+
+		<!-- Delete confirmation dialog -->
+		<div v-if="confirmDelete !== null" class="confirm-overlay" @click.self="confirmDelete = null">
+			<div class="confirm-dialog">
+				<h3>Delete rule</h3>
+				<p>
+					Delete rule <strong>{{ confirmDeleteId }}</strong>? This cannot be undone until you save.
+				</p>
+				<div class="confirm-actions">
+					<button class="action-btn action-btn--danger" @click="doDelete">
+						Delete
+					</button>
+					<button @click="confirmDelete = null">
+						Cancel
+					</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -101,14 +121,41 @@ export default {
 			editingIndex: null,
 			editingRule: null,
 			isNewRule: false,
+			confirmDelete: null,
 		}
 	},
 	computed: {
 		enabledCount() {
 			return this.rules.filter(r => r.enabled !== false).length
 		},
+		confirmDeleteId() {
+			if (this.confirmDelete === null || !this.rules[this.confirmDelete]) {
+				return ''
+			}
+			return this.rules[this.confirmDelete].id
+		},
+	},
+	mounted() {
+		window.addEventListener('beforeunload', this.onBeforeUnload)
+	},
+	beforeDestroy() {
+		window.removeEventListener('beforeunload', this.onBeforeUnload)
 	},
 	methods: {
+		onBeforeUnload(e) {
+			if (this.dirty) {
+				e.preventDefault()
+				e.returnValue = ''
+			}
+		},
+		switchTab(newTab) {
+			if (this.dirty && this.tab === 'visual' && newTab !== 'visual') {
+				if (!confirm('You have unsaved changes. Switch tab anyway?')) {
+					return
+				}
+			}
+			this.tab = newTab
+		},
 		onModeChange(newMode) {
 			this.mode = newMode
 			this.dirty = true
@@ -118,6 +165,11 @@ export default {
 			this.dirty = true
 		},
 		onDeleteRule(index) {
+			this.confirmDelete = index
+		},
+		doDelete() {
+			const index = this.confirmDelete
+			this.confirmDelete = null
 			this.rules.splice(index, 1)
 			if (this.editingIndex === index) {
 				this.editingIndex = null
@@ -158,6 +210,21 @@ export default {
 			this.editingIndex = null
 			this.editingRule = null
 			this.isNewRule = false
+		},
+		onReorder({ from, to }) {
+			const rule = this.rules.splice(from, 1)[0]
+			this.rules.splice(to, 0, rule)
+			// Adjust editing index if needed
+			if (this.editingIndex !== null) {
+				if (this.editingIndex === from) {
+					this.editingIndex = to
+				} else if (from < this.editingIndex && to >= this.editingIndex) {
+					this.editingIndex--
+				} else if (from > this.editingIndex && to <= this.editingIndex) {
+					this.editingIndex++
+				}
+			}
+			this.dirty = true
 		},
 		onJsonSaved(data) {
 			this.rules = data.rules || this.rules
@@ -218,6 +285,7 @@ export default {
 
 .tab-bar {
 	display: flex;
+	align-items: center;
 	gap: 0;
 	margin-bottom: 20px;
 	border-bottom: 2px solid var(--color-border, #ededed);
@@ -245,6 +313,18 @@ export default {
 	border-bottom-color: var(--color-primary-element, #0082c9);
 }
 
+.unsaved-badge {
+	margin-left: auto;
+	padding: 2px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	background-color: #fef3cd;
+	color: var(--color-warning, #eca700);
+	margin-bottom: -2px;
+}
+
 .empty-state {
 	color: var(--color-text-maxcontrast, #999);
 	font-style: italic;
@@ -269,5 +349,53 @@ export default {
 
 .status-message.error {
 	color: var(--color-error, #e9322d);
+}
+
+.confirm-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+}
+
+.confirm-dialog {
+	background: var(--color-main-background, #fff);
+	border-radius: var(--border-radius-large, 10px);
+	padding: 24px;
+	max-width: 400px;
+	width: 90%;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-dialog h3 {
+	margin-top: 0;
+}
+
+.confirm-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 16px;
+	justify-content: flex-end;
+}
+
+.action-btn {
+	padding: 6px 14px;
+	font-size: 13px;
+	border: 1px solid var(--color-border, #ededed);
+	border-radius: var(--border-radius, 3px);
+	background: var(--color-main-background, #fff);
+	cursor: pointer;
+}
+
+.action-btn--danger {
+	color: #fff;
+	background: var(--color-error, #e9322d);
+	border-color: var(--color-error, #e9322d);
 }
 </style>
