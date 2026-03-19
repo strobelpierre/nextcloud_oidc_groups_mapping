@@ -7,7 +7,11 @@
 	"scripts": {
 		"build": "webpack --node-env production --progress",
 		"dev": "webpack --node-env development --progress",
-		"watch": "webpack --node-env development --watch --progress"
+		"watch": "webpack --node-env development --watch --progress",
+		"release": "commit-and-tag-version",
+		"release:patch": "commit-and-tag-version --release-as patch",
+		"release:minor": "commit-and-tag-version --release-as minor",
+		"release:major": "commit-and-tag-version --release-as major"
 	},
 	"dependencies": {
 		"@nextcloud/axios": "^2.5.1",
@@ -18,6 +22,9 @@
 		"vue": "^2.7.16"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^19.6.1",
+		"@commitlint/config-conventional": "^19.6.0",
+		"commit-and-tag-version": "^12.5.0",
 		"@babel/core": "^7.22.9",
 		"@nextcloud/webpack-vue-config": "^7.0.2",
 		"babel-loader": "^10.0.0",

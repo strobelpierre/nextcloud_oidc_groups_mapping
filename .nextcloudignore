@@ -25,3 +25,8 @@ build
 docs
 CONTRIBUTING.md
 SECURITY.md
+commitlint.config.js
+scripts
+.versionrc.json
+CHANGELOG.md
+CLAUDE.md
