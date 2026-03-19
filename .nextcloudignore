@@ -4,6 +4,11 @@ tests
 dev
 vendor
 vendor-bin
+src
+node_modules
+webpack.config.js
+package.json
+package-lock.json
 .php-cs-fixer.dist.php
 .php-cs-fixer.cache
 .editorconfig
@@ -13,3 +18,10 @@ vendor-bin
 LICENSES
 psalm.xml
 Makefile
+*.key
+*.csr
+*.crt
+build
+docs
+CONTRIBUTING.md
+SECURITY.md

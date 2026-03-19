@@ -19,6 +19,7 @@ services:
       - ../appinfo:/var/www/html/custom_apps/oidc_groups_mapping/appinfo:cached
       - ../lib:/var/www/html/custom_apps/oidc_groups_mapping/lib:cached
       - ../templates:/var/www/html/custom_apps/oidc_groups_mapping/templates:cached
+      - ../js:/var/www/html/custom_apps/oidc_groups_mapping/js:cached
       - ./init-nextcloud.sh:/init-nextcloud.sh:ro
     depends_on:
       - postgres

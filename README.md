@@ -334,6 +334,10 @@ make appstore
 - Ensure the JSON is valid via the admin settings UI or `php occ oidc-groups:list`
 - For conditional rules with `regex` operator, ensure the regex pattern is valid (including delimiters)
 
+## Roadmap
+
+- [ ] Migrate frontend from Vue 2 (`@nextcloud/vue` v8) to Vue 3 (`@nextcloud/vue` v9) when targeting Nextcloud 33+
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

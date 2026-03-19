@@ -11,25 +11,29 @@ namespace OCA\OidcGroupsMapping\Settings;
 
 use OCA\OidcGroupsMapping\Model\RuleCollection;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\AppFramework\Services\IInitialState;
 use OCP\IAppConfig;
 use OCP\Settings\ISettings;
+use OCP\Util;
 
 class AdminSettings implements ISettings {
 
 	public function __construct(
 		private IAppConfig $appConfig,
+		private IInitialState $initialState,
 	) {
 	}
 
 	public function getForm(): TemplateResponse {
+		Util::addScript('oidc_groups_mapping', 'oidc_groups_mapping-main');
+
 		$json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
 		$collection = RuleCollection::fromJson($json);
 
-		return new TemplateResponse('oidc_groups_mapping', 'admin', [
-			'rules_json' => $collection->toJson(),
-			'mode' => $collection->getMode(),
-			'rules_count' => count($collection->getRules()),
-		]);
+		$this->initialState->provideInitialState('rules', $collection->toJson());
+		$this->initialState->provideInitialState('mode', $collection->getMode());
+
+		return new TemplateResponse('oidc_groups_mapping', 'admin', []);
 	}
 
 	public function getSection(): string {

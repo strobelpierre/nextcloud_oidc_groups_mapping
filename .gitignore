@@ -3,4 +3,9 @@
 /.php-cs-fixer.cache
 /.phpunit.cache
 /build/
+/node_modules/
+/js/
 .DS_Store
+*.key
+*.csr
+*.crt
