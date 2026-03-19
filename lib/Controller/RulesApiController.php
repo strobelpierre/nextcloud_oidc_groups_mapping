@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace OCA\OidcGroupsMapping\Controller;
 
 use OCA\OidcGroupsMapping\Model\RuleCollection;
-use OCA\OidcGroupsMapping\Service\ClaimResolver;
 use OCA\OidcGroupsMapping\Service\RuleEngine;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
