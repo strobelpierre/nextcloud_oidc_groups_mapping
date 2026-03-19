@@ -82,13 +82,14 @@ jobs:
 
       - name: Publish to Nextcloud App Store
         run: |
-          TARBALL_NAME="${APP_NAME}.tar.gz"
-          DOWNLOAD_URL=$(gh release view "${{ github.event.release.tag_name }}" --json assets -q ".assets[] | select(.name == \"${TARBALL_NAME}\") | .url")
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/${APP_NAME}.tar.gz"
           echo "Publishing ${DOWNLOAD_URL}"
-          curl -sf -X POST \
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Token ${{ secrets.APPSTORE_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"download\": \"${DOWNLOAD_URL}\"}" \
-            https://apps.nextcloud.com/api/v1/apps/releases
-        env:
-          GH_TOKEN: ${{ github.token }}
+            https://apps.nextcloud.com/api/v1/apps/releases)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          echo "Response (${HTTP_CODE}): ${BODY}"
+          [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]
