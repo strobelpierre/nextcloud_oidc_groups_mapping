@@ -21,11 +21,14 @@ A Nextcloud app that maps **multiple** OIDC token claims to Nextcloud groups via
 
 ## Features
 
+- **Vue admin UI** — visual rule editor with 3 tabs (Visual Editor, JSON, Simulator)
+- **Drag-and-drop reorder** — reorder rules visually in the admin panel
 - **5 rule types** — direct, prefix, map, conditional, template
 - **Dot-notation claim paths** — access any nested token field
 - **Additive or replace mode** — merge with or override existing groups
-- **Admin UI + OCC commands** — configure via browser or CLI
-- **Test command** — validate rules against sample tokens before going live
+- **REST API** — manage rules programmatically via OCS endpoints
+- **OCC commands** — list, set, and test rules from the CLI
+- **Dark mode** — full support for Nextcloud dark and light themes
 - **Zero config on user_oidc** — works with any provider setup
 
 ## Table of contents
@@ -36,6 +39,7 @@ A Nextcloud app that maps **multiple** OIDC token claims to Nextcloud groups via
 - [Configuration](#configuration)
 - [Configuring user_oidc](#configuring-user_oidc)
 - [Admin settings](#admin-settings)
+- [REST API](#rest-api)
 - [OCC commands](#occ-commands)
 - [How it works](#how-it-works)
 - [Installation](#installation)
@@ -237,7 +241,21 @@ The `mappingGroups` setting in your user_oidc provider configuration controls wh
 
 Configure rules through the Nextcloud admin panel under **Administration &rarr; OIDC Groups Mapping**.
 
+The admin UI has 3 tabs:
+
+- **Visual Editor** — add, edit, reorder (drag-and-drop), enable/disable, and delete rules
+- **JSON** — raw JSON editor for bulk editing or copy-pasting configurations
+- **Simulator** — paste a sample JWT token and preview which groups each rule produces
+
 ![Admin settings](docs/screenshots/admin-ui.svg)
+
+## REST API
+
+Rules can be managed programmatically via OCS REST endpoints:
+
+- `GET /ocs/v2.php/apps/oidc_groups_mapping/api/v1/rules` — list all rules
+- `PUT /ocs/v2.php/apps/oidc_groups_mapping/api/v1/rules` — replace all rules
+- `POST /ocs/v2.php/apps/oidc_groups_mapping/api/v1/rules/simulate` — simulate rules against a token
 
 ## OCC commands
 
@@ -281,14 +299,25 @@ php occ app:enable oidc_groups_mapping
 ```bash
 cd /var/www/html/custom_apps/
 git clone https://github.com/strobelpierre/nextcloud_oidc_groups_mapping.git oidc_groups_mapping
-cd oidc_groups_mapping && composer install --no-dev
+cd oidc_groups_mapping
+composer install --no-dev
+npm ci && npm run build
 php occ app:enable oidc_groups_mapping
 ```
 
 ## Development
 
 ```bash
+# PHP dependencies
 composer install
+
+# Frontend (Vue admin UI)
+npm ci
+npm run build         # Production build
+npm run dev           # Development build
+npm run watch         # Watch mode with auto-rebuild
+
+# Quality checks
 composer test:unit    # PHPUnit
 composer psalm        # Static analysis
 composer cs:check     # Code style check (requires vendor-bin setup)

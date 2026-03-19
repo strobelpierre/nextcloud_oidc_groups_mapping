@@ -14,7 +14,7 @@ Files: dev/*
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
 
-Files: .editorconfig .gitignore .nextcloudignore Makefile
+Files: .editorconfig .gitignore .nextcloudignore Makefile .versionrc.json CHANGELOG.md
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
 

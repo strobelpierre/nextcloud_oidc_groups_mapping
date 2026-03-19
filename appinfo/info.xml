@@ -7,18 +7,22 @@
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>oidc_groups_mapping</id>
     <name>OIDC Groups Mapping</name>
-    <summary>Map multiple OIDC token claims to Nextcloud groups</summary>
+    <summary>Map OIDC token claims to Nextcloud groups with a visual rule editor</summary>
     <description><![CDATA[
-This app extends the user_oidc app by listening to the AttributeMappedEvent
-to transform multiple OIDC token claims into Nextcloud groups using configurable rules.
+Map multiple OIDC token claims to Nextcloud groups using configurable rules.
 
-Supports direct mapping, prefix, map tables, conditional rules, and templates.
+**Admin UI** — visual rule editor with drag-and-drop reorder, raw JSON editor, and claim simulator.
+**5 rule types** — direct, prefix, map, conditional, template.
+**REST API** — manage rules programmatically via OCS endpoints.
+**OCC commands** — list, set, and test rules from the CLI.
+**Dark mode** — full support for Nextcloud dark and light themes.
 
-**Requires the user_oidc app to be installed and enabled.**
+Works with any identity provider through the user_oidc app.
+Requires user_oidc to be installed and enabled.
     ]]></description>
     <version>1.0.0</version>
     <licence>agpl</licence>
-    <author>OIDC Groups Mapping Contributors</author>
+    <author>Pierre Strobel</author>
     <namespace>OidcGroupsMapping</namespace>
     <category>integration</category>
     <website>https://github.com/strobelpierre/nextcloud_oidc_groups_mapping</website>
