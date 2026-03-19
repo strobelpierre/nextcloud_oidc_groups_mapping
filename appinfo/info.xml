@@ -20,7 +20,7 @@ Map multiple OIDC token claims to Nextcloud groups using configurable rules.
 Works with any identity provider through the user_oidc app.
 Requires user_oidc to be installed and enabled.
     ]]></description>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <licence>agpl</licence>
     <author>Pierre Strobel</author>
     <namespace>OidcGroupsMapping</namespace>
