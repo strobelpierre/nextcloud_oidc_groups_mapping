@@ -31,23 +31,49 @@ jobs:
       - name: Build tarball
         run: make appstore
 
-      - name: Download Nextcloud server (for occ sign)
-        run: |
-          NC_VERSION=$(grep -oP 'max-version="\K[0-9]+' appinfo/info.xml)
-          curl -sL "https://download.nextcloud.com/server/releases/latest-${NC_VERSION}.tar.bz2" | tar xjf -
-
       - name: Sign app
         run: |
-          mkdir -p $HOME/.nextcloud/certificates
-          echo "${{ secrets.APP_PRIVATE_KEY }}" > $HOME/.nextcloud/certificates/${APP_NAME}.key
+          # Write key and fetch certificate
+          echo "${{ secrets.APP_PRIVATE_KEY }}" > /tmp/app.key
           curl -sL "https://github.com/nextcloud/app-certificate-requests/raw/master/${APP_NAME}/${APP_NAME}.crt" \
-            -o $HOME/.nextcloud/certificates/${APP_NAME}.crt
-          tar xzf build/${APP_NAME}.tar.gz -C nextcloud/apps/
-          php nextcloud/occ integrity:sign-app \
-            --privateKey=$HOME/.nextcloud/certificates/${APP_NAME}.key \
-            --certificate=$HOME/.nextcloud/certificates/${APP_NAME}.crt \
-            --path=nextcloud/apps/${APP_NAME}
-          cd nextcloud/apps && tar czf ../../build/${APP_NAME}.tar.gz ${APP_NAME}
+            -o /tmp/app.crt
+
+          # Extract, sign, repackage
+          cd build
+          tar xzf ${APP_NAME}.tar.gz
+          cd ${APP_NAME}
+
+          # Generate signature.json using PHP + openssl
+          php << 'PHPSIGN'
+          <?php
+          $appPath = getcwd();
+          $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($appPath, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+          );
+          $hashes = [];
+          foreach ($iterator as $file) {
+            if ($file->isFile()) {
+              $relPath = ltrim(str_replace($appPath, '', $file->getPathname()), '/');
+              if ($relPath === 'appinfo/signature.json') continue;
+              $hashes[$relPath] = ['sha512' => hash_file('sha512', $file->getPathname())];
+            }
+          }
+          ksort($hashes);
+          $privateKey = file_get_contents('/tmp/app.key');
+          openssl_sign(json_encode($hashes), $signature, $privateKey, OPENSSL_ALGO_SHA512);
+          $result = [
+            'hashes' => $hashes,
+            'signature' => base64_encode($signature),
+            'certificate' => file_get_contents('/tmp/app.crt'),
+          ];
+          file_put_contents('appinfo/signature.json', json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+          echo "Signed " . count($hashes) . " files\n";
+          PHPSIGN
+
+          cd ..
+          tar czf ${APP_NAME}.tar.gz ${APP_NAME}
+          rm -rf ${APP_NAME}
 
       - name: Attach signed tarball to release
         uses: softprops/action-gh-release@v2
