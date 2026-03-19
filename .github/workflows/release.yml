@@ -77,3 +77,8 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           body: ${{ steps.changelog.outputs.body }}
           files: build/artifacts/oidc_groups_mapping.tar.gz
+
+      - name: Trigger App Store publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run appstore-build-publish.yml -f tag=${{ steps.version.outputs.tag }}

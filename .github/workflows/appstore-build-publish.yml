@@ -6,6 +6,12 @@ name: Publish to Nextcloud App Store
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v1.1.0)'
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -17,7 +23,18 @@ jobs:
       APP_NAME: oidc_groups_mapping
 
     steps:
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -25,8 +42,15 @@ jobs:
           php-version: '8.2'
           coverage: none
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
       - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction
+        run: |
+          composer install --no-dev --prefer-dist --no-interaction
+          npm ci
 
       - name: Build tarball
         run: make appstore
@@ -39,7 +63,7 @@ jobs:
             -o /tmp/app.crt
 
           # Extract, sign, repackage
-          cd build
+          cd build/artifacts
           tar xzf ${APP_NAME}.tar.gz
           cd ${APP_NAME}
 
@@ -81,11 +105,13 @@ jobs:
       - name: Attach signed tarball to release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/${{ env.APP_NAME }}.tar.gz
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: build/artifacts/${{ env.APP_NAME }}.tar.gz
 
       - name: Publish to Nextcloud App Store
         run: |
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/${APP_NAME}.tar.gz"
+          TAG="${{ steps.tag.outputs.tag }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${APP_NAME}.tar.gz"
           SIGNATURE=$(cat /tmp/tarball.sig)
           echo "Publishing ${DOWNLOAD_URL}"
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
