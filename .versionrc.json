@@ -1,0 +1,16 @@
+{
+	"header": "# Changelog\n\nAll notable changes to this project are documented in this file.\n",
+	"types": [
+		{ "type": "feat", "section": "Features" },
+		{ "type": "fix", "section": "Bug Fixes" },
+		{ "type": "docs", "hidden": true },
+		{ "type": "ci", "hidden": true },
+		{ "type": "chore", "hidden": true }
+	],
+	"tagPrefix": "v",
+	"packageFiles": [{ "filename": "package.json", "type": "json" }],
+	"bumpFiles": [
+		{ "filename": "package.json", "type": "json" },
+		{ "filename": "appinfo/info.xml", "updater": "scripts/xml-version-updater.js" }
+	]
+}

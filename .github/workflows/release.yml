@@ -4,9 +4,18 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: 'Release type (auto detects from commits, or force patch/minor/major)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
@@ -15,11 +24,56 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version and generate changelog
+        id: version
+        run: |
+          if [ "${{ inputs.release-type }}" = "auto" ]; then
+            npx commit-and-tag-version
+          else
+            npx commit-and-tag-version --release-as ${{ inputs.release-type }}
+          fi
+          echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
+
+      - name: Push changes and tags
+        run: git push --follow-tags origin main
 
       - name: Build tarball
         run: make appstore
 
+      - name: Extract changelog for release
+        id: changelog
+        run: |
+          # Extract the latest version section from CHANGELOG.md
+          VERSION="${{ steps.version.outputs.tag }}"
+          CHANGELOG=$(sed -n "/^## \[${VERSION#v}\]/,/^## \[/p" CHANGELOG.md | sed '$ d')
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG=$(sed -n "/^### /,/^## \[/p" CHANGELOG.md | sed '$ d')
+          fi
+          {
+            echo "body<<CHANGELOG_EOF"
+            echo "$CHANGELOG"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/oidc_groups_mapping.tar.gz
+          tag_name: ${{ steps.version.outputs.tag }}
+          body: ${{ steps.changelog.outputs.body }}
+          files: build/artifacts/oidc_groups_mapping.tar.gz
