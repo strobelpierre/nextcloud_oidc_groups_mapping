@@ -75,6 +75,9 @@ jobs:
           tar czf ${APP_NAME}.tar.gz ${APP_NAME}
           rm -rf ${APP_NAME}
 
+          # Generate detached signature of the tarball for App Store API
+          openssl dgst -sha512 -sign /tmp/app.key ${APP_NAME}.tar.gz | openssl base64 -A > /tmp/tarball.sig
+
       - name: Attach signed tarball to release
         uses: softprops/action-gh-release@v2
         with:
@@ -83,11 +86,12 @@ jobs:
       - name: Publish to Nextcloud App Store
         run: |
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/${APP_NAME}.tar.gz"
+          SIGNATURE=$(cat /tmp/tarball.sig)
           echo "Publishing ${DOWNLOAD_URL}"
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Token ${{ secrets.APPSTORE_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "{\"download\": \"${DOWNLOAD_URL}\"}" \
+            -d "{\"download\": \"${DOWNLOAD_URL}\", \"signature\": \"${SIGNATURE}\"}" \
             https://apps.nextcloud.com/api/v1/apps/releases)
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)
           BODY=$(echo "$RESPONSE" | head -n -1)
