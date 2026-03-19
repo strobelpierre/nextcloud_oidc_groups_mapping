@@ -1,0 +1,65 @@
+# SPDX-FileCopyrightText: 2026 OIDC Groups Mapping Contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: Publish to Nextcloud App Store
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      APP_NAME: oidc_groups_mapping
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction
+
+      - name: Build tarball
+        run: make appstore
+
+      - name: Download Nextcloud server (for occ sign)
+        run: |
+          NC_VERSION=$(grep -oP 'max-version="\K[0-9]+' appinfo/info.xml)
+          curl -sL "https://download.nextcloud.com/server/releases/latest-${NC_VERSION}.tar.bz2" | tar xjf -
+
+      - name: Sign app
+        run: |
+          mkdir -p $HOME/.nextcloud/certificates
+          echo "${{ secrets.APP_PRIVATE_KEY }}" > $HOME/.nextcloud/certificates/${APP_NAME}.key
+          curl -sL "https://github.com/nextcloud/app-certificate-requests/raw/master/${APP_NAME}/${APP_NAME}.crt" \
+            -o $HOME/.nextcloud/certificates/${APP_NAME}.crt
+          tar xzf build/artifacts/${APP_NAME}.tar.gz -C nextcloud/apps/
+          php nextcloud/occ integrity:sign-app \
+            --privateKey=$HOME/.nextcloud/certificates/${APP_NAME}.key \
+            --certificate=$HOME/.nextcloud/certificates/${APP_NAME}.crt \
+            --path=nextcloud/apps/${APP_NAME}
+          cd nextcloud/apps && tar czf ../../build/artifacts/${APP_NAME}.tar.gz ${APP_NAME}
+
+      - name: Attach signed tarball to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/artifacts/${{ env.APP_NAME }}.tar.gz
+
+      - name: Publish to Nextcloud App Store
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Token ${{ secrets.APPSTORE_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"download\": \"$(gh release view ${{ github.event.release.tag_name }} --json assets --jq '.assets[] | select(.name == \"${APP_NAME}.tar.gz\") | .url')\"}" \
+            https://apps.nextcloud.com/api/v1/apps/releases
+        env:
+          GH_TOKEN: ${{ github.token }}
