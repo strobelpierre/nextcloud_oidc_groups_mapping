@@ -26,15 +26,13 @@
 			<button :disabled="!dirty" @click="onReset">
 				Reset
 			</button>
-			<span v-if="statusMessage" :class="['status-message', statusType]">
-				{{ statusMessage }}
-			</span>
 		</div>
 	</div>
 </template>
 
 <script>
 import { generateOcsUrl } from '@nextcloud/router'
+import { showSuccess, showError } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
 
 export default {
@@ -55,8 +53,6 @@ export default {
 			jsonText: initial,
 			savedText: initial,
 			saving: false,
-			statusMessage: '',
-			statusType: '',
 		}
 	},
 	computed: {
@@ -99,7 +95,6 @@ export default {
 		},
 		async onSave() {
 			this.saving = true
-			this.statusMessage = ''
 
 			try {
 				const url = generateOcsUrl('/apps/oidc_groups_mapping/api/v1/rules')
@@ -108,25 +103,14 @@ export default {
 
 				this.savedText = this.jsonText
 				this.$emit('saved', data)
-				this.showStatus('Saved!', 'success')
+				showSuccess('Rules saved from JSON editor')
 			} catch (e) {
 				const msg = e.response?.data?.ocs?.data?.message
 					|| e.message
 					|| 'Save failed'
-				this.showStatus('Error: ' + msg, 'error')
+				showError('Failed to save: ' + msg)
 			} finally {
 				this.saving = false
-			}
-		},
-		showStatus(message, type) {
-			this.statusMessage = message
-			this.statusType = type
-			if (type === 'success') {
-				setTimeout(() => {
-					if (this.statusMessage === message) {
-						this.statusMessage = ''
-					}
-				}, 3000)
 			}
 		},
 	},
@@ -140,7 +124,7 @@ export default {
 
 .json-hint {
 	font-size: 13px;
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 	margin-bottom: 12px;
 }
 
@@ -149,22 +133,24 @@ export default {
 	font-family: monospace;
 	font-size: 13px;
 	padding: 8px;
-	border: 2px solid var(--color-border, #ededed);
+	border: 2px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
 	box-sizing: border-box;
 	transition: border-color 0.2s ease;
+	background: var(--color-main-background);
+	color: var(--color-main-text);
 }
 
 .json-fallback textarea:focus {
-	border-color: var(--color-primary-element, #0082c9);
+	border-color: var(--color-primary-element);
 }
 
 .json-fallback textarea.json-error {
-	border-color: var(--color-error, #e9322d);
+	border-color: var(--color-error);
 }
 
 .error-message {
-	color: var(--color-error, #e9322d);
+	color: var(--color-error);
 	font-size: 12px;
 	margin-top: 4px;
 }
@@ -174,18 +160,5 @@ export default {
 	align-items: center;
 	gap: 12px;
 	margin-top: 12px;
-}
-
-.status-message {
-	font-size: 13px;
-	font-weight: 500;
-}
-
-.status-message.success {
-	color: var(--color-success, #46ba61);
-}
-
-.status-message.error {
-	color: var(--color-error, #e9322d);
 }
 </style>

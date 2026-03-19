@@ -113,7 +113,7 @@ export default {
 
 <style scoped>
 .claim-simulator {
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius-large, 10px);
 	padding: 16px;
 	margin-top: 20px;
@@ -121,7 +121,7 @@ export default {
 
 .simulator-hint {
 	font-size: 13px;
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 	margin-bottom: 12px;
 }
 
@@ -134,6 +134,7 @@ export default {
 	font-weight: 600;
 	font-size: 13px;
 	margin-bottom: 4px;
+	color: var(--color-main-text);
 }
 
 .form-row textarea,
@@ -141,11 +142,13 @@ export default {
 	width: 100%;
 	max-width: 500px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
 	font-family: monospace;
 	font-size: 13px;
 	box-sizing: border-box;
+	background: var(--color-main-background);
+	color: var(--color-main-text);
 }
 
 .sim-actions {
@@ -153,7 +156,7 @@ export default {
 }
 
 .sim-error {
-	color: var(--color-error, #e9322d);
+	color: var(--color-error);
 	font-size: 13px;
 	margin-bottom: 12px;
 }
@@ -183,8 +186,8 @@ export default {
 	border-radius: 12px;
 	font-size: 12px;
 	font-weight: 600;
-	background-color: var(--color-primary-element-light, #e8f0fe);
-	color: var(--color-primary-element, #0082c9);
+	background-color: var(--color-primary-element-light);
+	color: var(--color-primary-element-light-text, var(--color-primary-element));
 }
 
 .rule-result {
@@ -210,21 +213,21 @@ export default {
 }
 
 .badge-matched {
-	background-color: #e6f4ea;
-	color: var(--color-success, #46ba61);
+	background-color: var(--color-success-hover, rgba(70, 186, 97, 0.15));
+	color: var(--color-success-text, var(--color-success));
 }
 
 .badge-unmatched {
-	background-color: var(--color-background-dark, #ededed);
-	color: var(--color-text-maxcontrast, #999);
+	background-color: var(--color-background-dark);
+	color: var(--color-text-maxcontrast);
 }
 
 .rule-result-groups {
-	color: var(--color-main-text, #222);
+	color: var(--color-main-text);
 }
 
 .empty-state {
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 	font-style: italic;
 }
 </style>

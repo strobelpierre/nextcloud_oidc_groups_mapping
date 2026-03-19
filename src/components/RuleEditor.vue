@@ -182,11 +182,11 @@ export default {
 
 <style scoped>
 .rule-editor {
-	border: 2px solid var(--color-primary-element, #0082c9);
+	border: 2px solid var(--color-primary-element);
 	border-radius: var(--border-radius-large, 10px);
 	padding: 16px;
 	margin-top: 12px;
-	background-color: var(--color-main-background, #fff);
+	background-color: var(--color-main-background);
 }
 
 .rule-editor h3 {
@@ -210,10 +210,16 @@ export default {
 	width: 100%;
 	max-width: 400px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
 	font-size: 14px;
 	box-sizing: border-box;
+	background: var(--color-main-background);
+	color: var(--color-main-text);
+}
+
+.action-btn {
+	color: var(--color-main-text);
 }
 
 .form-row input[type="checkbox"] {
@@ -232,30 +238,30 @@ export default {
 }
 
 .mapping-key {
-	background-color: var(--color-background-dark, #f5f5f5);
+	background-color: var(--color-background-dark);
 }
 
 .mapping-arrow {
 	font-size: 16px;
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 }
 
 .action-btn {
 	padding: 4px 10px;
 	font-size: 12px;
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
-	background: var(--color-main-background, #fff);
+	background: var(--color-main-background);
 	cursor: pointer;
 }
 
 .action-btn:hover {
-	background: var(--color-background-hover, #f5f5f5);
+	background: var(--color-background-hover);
 }
 
 .action-btn--danger {
-	color: var(--color-error, #e9322d);
-	border-color: var(--color-error, #e9322d);
+	color: var(--color-error);
+	border-color: var(--color-error);
 }
 
 .editor-actions {

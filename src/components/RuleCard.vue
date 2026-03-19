@@ -83,10 +83,10 @@ export default {
 
 <style scoped>
 .rule-card {
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius-large, 10px);
 	padding: 16px;
-	background-color: var(--color-main-background, #fff);
+	background-color: var(--color-background-hover);
 	transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 	cursor: grab;
 }
@@ -96,16 +96,16 @@ export default {
 }
 
 .rule-card.disabled {
-	opacity: 0.6;
+	opacity: 0.5;
 }
 
 .rule-card.dragging {
-	opacity: 0.4;
+	opacity: 0.3;
 	transform: scale(0.98);
 }
 
 .rule-card.drag-over {
-	border-color: var(--color-primary-element, #0082c9);
+	border-color: var(--color-primary-element);
 	border-style: dashed;
 	border-width: 2px;
 }
@@ -119,7 +119,7 @@ export default {
 
 .drag-handle {
 	cursor: grab;
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 	font-size: 16px;
 	user-select: none;
 }
@@ -129,14 +129,14 @@ export default {
 }
 
 .rule-type {
-	background-color: var(--color-primary-element-light, #e8f0fe);
-	color: var(--color-primary-element, #0082c9);
+	background-color: var(--color-primary-element-light);
+	color: var(--color-primary-element-light-text, var(--color-primary-element));
 }
 
 .rule-claim {
 	font-family: monospace;
 	font-size: 13px;
-	color: var(--color-text-maxcontrast, #999);
+	color: var(--color-text-maxcontrast);
 }
 
 .badge {
@@ -149,8 +149,8 @@ export default {
 }
 
 .badge-disabled {
-	background-color: var(--color-background-dark, #ededed);
-	color: var(--color-text-maxcontrast, #999);
+	background-color: var(--color-background-dark);
+	color: var(--color-text-maxcontrast);
 }
 
 .rule-actions {
@@ -162,29 +162,30 @@ export default {
 .action-btn {
 	padding: 4px 10px;
 	font-size: 12px;
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
-	background: var(--color-main-background, #fff);
+	background: var(--color-main-background);
+	color: var(--color-main-text);
 	cursor: pointer;
 }
 
 .action-btn:hover {
-	background: var(--color-background-hover, #f5f5f5);
+	background: var(--color-background-hover);
 }
 
 .action-btn--danger {
-	color: var(--color-error, #e9322d);
-	border-color: var(--color-error, #e9322d);
+	color: var(--color-error);
+	border-color: var(--color-error);
 }
 
 .action-btn--danger:hover {
-	background: var(--color-error, #e9322d);
-	color: #fff;
+	background: var(--color-error);
+	color: var(--color-primary-element-text);
 }
 
 .rule-summary {
 	font-size: 14px;
-	color: var(--color-main-text, #222);
+	color: var(--color-text-light, var(--color-main-text));
 	padding-left: 24px;
 }
 </style>

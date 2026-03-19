@@ -45,15 +45,18 @@ export default {
 .mode-label {
 	font-weight: 600;
 	font-size: 14px;
+	color: var(--color-main-text);
 }
 
 .mode-select {
 	padding: 4px 8px;
-	border: 1px solid var(--color-border, #ededed);
+	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius, 3px);
 	font-size: 14px;
 	text-transform: uppercase;
 	font-weight: 600;
+	background: var(--color-main-background);
+	color: var(--color-main-text);
 }
 
 .badge {
@@ -66,7 +69,7 @@ export default {
 }
 
 .badge-count {
-	background-color: var(--color-background-dark, #ededed);
-	color: var(--color-main-text, #222);
+	background-color: var(--color-background-dark);
+	color: var(--color-main-text);
 }
 </style>
