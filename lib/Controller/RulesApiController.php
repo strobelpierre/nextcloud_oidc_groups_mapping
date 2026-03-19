@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace OCA\OidcGroupsMapping\Controller;
 
 use OCA\OidcGroupsMapping\Model\RuleCollection;
+use OCA\OidcGroupsMapping\Service\ClaimResolver;
+use OCA\OidcGroupsMapping\Service\RuleEngine;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\OCSController;
@@ -21,6 +23,7 @@ class RulesApiController extends OCSController {
 	public function __construct(
 		IRequest $request,
 		private IAppConfig $appConfig,
+		private RuleEngine $ruleEngine,
 	) {
 		parent::__construct('oidc_groups_mapping', $request);
 	}
@@ -62,6 +65,60 @@ class RulesApiController extends OCSController {
 			'rules' => array_map(fn ($r) => $r->toArray(), $collection->getRules()),
 			'rules_count' => count($collection->getRules()),
 			'enabled_count' => count($collection->getEnabledRules()),
+		]);
+	}
+
+	/**
+	 * Simulate mapping rules against a sample token.
+	 */
+	public function simulate(string $token, string $existing = '[]'): DataResponse {
+		$claims = json_decode($token);
+		if (!is_object($claims)) {
+			return new DataResponse(
+				['message' => 'Invalid JSON token'],
+				Http::STATUS_BAD_REQUEST,
+			);
+		}
+
+		$existingGroups = json_decode($existing, true);
+		if (!is_array($existingGroups)) {
+			$existingGroups = [];
+		}
+
+		$rulesJson = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
+		$collection = RuleCollection::fromJson($rulesJson);
+		$enabledRules = $collection->getEnabledRules();
+
+		$ruleResults = [];
+		$producedGroups = [];
+
+		foreach ($enabledRules as $rule) {
+			$result = $this->ruleEngine->apply($rule, $claims);
+			$ruleResults[] = [
+				'ruleId' => $result->getRuleId(),
+				'matched' => $result->isMatched(),
+				'groups' => $result->getGroups(),
+			];
+			if ($result->isMatched()) {
+				array_push($producedGroups, ...$result->getGroups());
+			}
+		}
+
+		$mode = $collection->getMode();
+		if ($mode === 'replace') {
+			$finalGroups = count($producedGroups) === 0
+				? $existingGroups
+				: array_values(array_unique($producedGroups));
+		} else {
+			$finalGroups = array_values(array_unique(array_merge($existingGroups, $producedGroups)));
+		}
+
+		return new DataResponse([
+			'mode' => $mode,
+			'ruleResults' => $ruleResults,
+			'producedGroups' => array_values(array_unique($producedGroups)),
+			'existingGroups' => $existingGroups,
+			'finalGroups' => $finalGroups,
 		]);
 	}
 }

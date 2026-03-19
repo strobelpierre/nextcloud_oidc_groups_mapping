@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace OCA\OidcGroupsMapping\Tests\Unit\Controller;
 
 use OCA\OidcGroupsMapping\Controller\RulesApiController;
+use OCA\OidcGroupsMapping\Service\ClaimResolver;
+use OCA\OidcGroupsMapping\Service\RuleEngine;
 use OCP\IAppConfig;
 use OCP\IRequest;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +24,8 @@ class RulesApiControllerTest extends TestCase {
 	protected function setUp(): void {
 		$this->appConfig = $this->createMock(IAppConfig::class);
 		$request = $this->createMock(IRequest::class);
-		$this->controller = new RulesApiController($request, $this->appConfig);
+		$ruleEngine = new RuleEngine(new ClaimResolver());
+		$this->controller = new RulesApiController($request, $this->appConfig, $ruleEngine);
 	}
 
 	public function testIndexReturnsEmptyCollection(): void {
@@ -162,5 +165,92 @@ class RulesApiControllerTest extends TestCase {
 
 		self::assertSame(2, $data['rules_count']);
 		self::assertSame(1, $data['enabled_count']);
+	}
+
+	public function testSimulateRejectsInvalidToken(): void {
+		$response = $this->controller->simulate('not json');
+
+		self::assertSame(400, $response->getStatus());
+		self::assertSame('Invalid JSON token', $response->getData()['message']);
+	}
+
+	public function testSimulateWithDirectRule(): void {
+		$rulesJson = json_encode([
+			'version' => 1,
+			'mode' => 'additive',
+			'rules' => [
+				[
+					'id' => 'dept',
+					'type' => 'direct',
+					'enabled' => true,
+					'claimPath' => 'department',
+					'config' => [],
+				],
+			],
+		]);
+
+		$this->appConfig->method('getValueString')
+			->willReturn($rulesJson);
+
+		$response = $this->controller->simulate('{"department":"Engineering"}');
+		$data = $response->getData();
+
+		self::assertSame(200, $response->getStatus());
+		self::assertSame('additive', $data['mode']);
+		self::assertCount(1, $data['ruleResults']);
+		self::assertTrue($data['ruleResults'][0]['matched']);
+		self::assertSame(['Engineering'], $data['ruleResults'][0]['groups']);
+		self::assertSame(['Engineering'], $data['finalGroups']);
+	}
+
+	public function testSimulateAdditiveMode(): void {
+		$rulesJson = json_encode([
+			'version' => 1,
+			'mode' => 'additive',
+			'rules' => [
+				[
+					'id' => 'dept',
+					'type' => 'direct',
+					'enabled' => true,
+					'claimPath' => 'department',
+					'config' => [],
+				],
+			],
+		]);
+
+		$this->appConfig->method('getValueString')
+			->willReturn($rulesJson);
+
+		$response = $this->controller->simulate('{"department":"IT"}', '["users"]');
+		$data = $response->getData();
+
+		self::assertSame(['users', 'IT'], $data['finalGroups']);
+		self::assertSame(['users'], $data['existingGroups']);
+	}
+
+	public function testSimulateReplaceModeNoMatch(): void {
+		$rulesJson = json_encode([
+			'version' => 1,
+			'mode' => 'replace',
+			'rules' => [
+				[
+					'id' => 'dept',
+					'type' => 'direct',
+					'enabled' => true,
+					'claimPath' => 'department',
+					'config' => [],
+				],
+			],
+		]);
+
+		$this->appConfig->method('getValueString')
+			->willReturn($rulesJson);
+
+		// Token has no 'department' claim
+		$response = $this->controller->simulate('{"roles":["admin"]}', '["users"]');
+		$data = $response->getData();
+
+		// Replace mode with no match falls back to existing
+		self::assertSame(['users'], $data['finalGroups']);
 	}
 }

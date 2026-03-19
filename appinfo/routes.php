@@ -11,5 +11,6 @@ return [
 	'ocs' => [
 		['name' => 'RulesApi#index', 'url' => '/api/v1/rules', 'verb' => 'GET'],
 		['name' => 'RulesApi#update', 'url' => '/api/v1/rules', 'verb' => 'PUT'],
+		['name' => 'RulesApi#simulate', 'url' => '/api/v1/simulate', 'verb' => 'POST'],
 	],
 ];
