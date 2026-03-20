@@ -83,13 +83,8 @@ With `user_oidc` alone, you can map **one** claim to groups (`mappingGroups`). B
 ## Quick start
 
 ```bash
-# Download and extract
-cd /var/www/html/custom_apps/
-wget https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/releases/latest/download/oidc_groups_mapping.tar.gz
-tar xzf oidc_groups_mapping.tar.gz
-
-# Enable
-php occ app:enable oidc_groups_mapping
+# Install from the App Store
+php occ app:install oidc_groups_mapping
 
 # Configure rules
 php occ oidc-groups:set '{
@@ -285,7 +280,14 @@ This app listens to the `AttributeMappedEvent` dispatched by `user_oidc` during 
 
 ## Installation
 
-### From release tarball (recommended)
+### Nextcloud App Store (recommended)
+
+Install directly from the [Nextcloud App Store](https://apps.nextcloud.com/apps/oidc_groups_mapping):
+
+- **Via admin UI:** Administration → Apps → search "OIDC Groups Mapping" → Install
+- **Via OCC:** `php occ app:install oidc_groups_mapping`
+
+### From release tarball
 
 ```bash
 cd /var/www/html/custom_apps/
