@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write # required to trigger appstore-build-publish.yml from the final step
     steps:
       - uses: actions/checkout@v4
         with:
