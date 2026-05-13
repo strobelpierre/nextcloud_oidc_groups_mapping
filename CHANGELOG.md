@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.1](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.1.0...v1.1.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* **ci:** fix App Store publish paths and trigger from release workflow ([d49dafe](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/d49dafee3aa6d726db7ce98bc5dbb1d78dd6fe35))
+* remove unused ClaimResolver import in RulesApiController ([001f24e](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/001f24efbd35302513c7635a2f58eb0d81c39ccf))
+* sign app via occ integrity:sign-app instead of PHP openssl_sign ([c587799](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/c587799394963ccded231fed5717478a3ba9a5e8)), closes [PKCS#1](https://github.com/strobelpierre/PKCS/issues/1)
+
 ## [1.1.0](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.0.0...v1.1.0) (2026-03-19)
 
 
