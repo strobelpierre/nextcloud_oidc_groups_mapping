@@ -55,52 +55,85 @@ jobs:
       - name: Build tarball
         run: make appstore
 
-      - name: Sign app
+      - name: Sign app (via occ integrity:sign-app)
+        # PHP's openssl_sign() only supports PKCS#1 v1.5 padding, but Nextcloud's
+        # integrity check requires RSA-PSS / SHA-512 / MGF1-SHA-512 / saltLen=0.
+        # We therefore drive `occ integrity:sign-app` on a real Nextcloud instance,
+        # which is the canonical signing path documented by Nextcloud.
         run: |
-          # Write key and fetch certificate
           echo "${{ secrets.APP_PRIVATE_KEY }}" > /tmp/app.key
           curl -sL "https://github.com/nextcloud/app-certificate-requests/raw/master/${APP_NAME}/${APP_NAME}.crt" \
             -o /tmp/app.crt
 
-          # Extract, sign, repackage
+          docker run -d --name nc-signer \
+            -e SQLITE_DATABASE=db \
+            -e NEXTCLOUD_ADMIN_USER=a \
+            -e NEXTCLOUD_ADMIN_PASSWORD=a \
+            nextcloud:32-apache
+
+          for i in $(seq 1 60); do
+            if docker exec -u www-data nc-signer php occ status 2>/dev/null | grep -q "installed: true"; then
+              break
+            fi
+            sleep 3
+          done
+
           cd build/artifacts
           tar xzf ${APP_NAME}.tar.gz
-          cd ${APP_NAME}
 
-          # Generate signature.json using PHP + openssl
-          php << 'PHPSIGN'
-          <?php
-          $appPath = getcwd();
-          $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($appPath, FilesystemIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
-          );
-          $hashes = [];
-          foreach ($iterator as $file) {
-            if ($file->isFile()) {
-              $relPath = ltrim(str_replace($appPath, '', $file->getPathname()), '/');
-              if ($relPath === 'appinfo/signature.json') continue;
-              $hashes[$relPath] = ['sha512' => hash_file('sha512', $file->getPathname())];
-            }
-          }
-          ksort($hashes);
-          $privateKey = file_get_contents('/tmp/app.key');
-          openssl_sign(json_encode($hashes), $signature, $privateKey, OPENSSL_ALGO_SHA512);
-          $result = [
-            'hashes' => $hashes,
-            'signature' => base64_encode($signature),
-            'certificate' => file_get_contents('/tmp/app.crt'),
-          ];
-          file_put_contents('appinfo/signature.json', json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-          echo "Signed " . count($hashes) . " files\n";
-          PHPSIGN
+          docker cp ${APP_NAME} nc-signer:/var/www/html/custom_apps/
+          docker cp /tmp/app.key nc-signer:/tmp/app.key
+          docker cp /tmp/app.crt nc-signer:/tmp/app.crt
+          docker exec nc-signer chown -R www-data:www-data \
+            /var/www/html/custom_apps/${APP_NAME} /tmp/app.key /tmp/app.crt
 
-          cd ..
+          docker exec -u www-data nc-signer php occ integrity:sign-app \
+            --path=/var/www/html/custom_apps/${APP_NAME} \
+            --privateKey=/tmp/app.key \
+            --certificate=/tmp/app.crt
+
+          docker cp nc-signer:/var/www/html/custom_apps/${APP_NAME}/appinfo/signature.json \
+            ${APP_NAME}/appinfo/signature.json
+
           tar czf ${APP_NAME}.tar.gz ${APP_NAME}
           rm -rf ${APP_NAME}
 
-          # Generate detached signature of the tarball for App Store API
+          # Detached tarball signature for the App Store REST API (separate
+          # mechanism, PKCS#1 here is what the API expects).
           openssl dgst -sha512 -sign /tmp/app.key ${APP_NAME}.tar.gz | openssl base64 -A > /tmp/tarball.sig
+
+      - name: Verify signed app passes integrity check
+        # Guard against the silent failure mode that shipped v1.0.0 and v1.1.0 with
+        # invalid signatures: spin up a fresh NC and confirm integrity:check-app
+        # returns no errors before publishing anything.
+        run: |
+          docker run -d --name nc-verify \
+            -e SQLITE_DATABASE=db \
+            -e NEXTCLOUD_ADMIN_USER=a \
+            -e NEXTCLOUD_ADMIN_PASSWORD=a \
+            nextcloud:32-apache
+
+          for i in $(seq 1 60); do
+            if docker exec -u www-data nc-verify php occ status 2>/dev/null | grep -q "installed: true"; then
+              break
+            fi
+            sleep 3
+          done
+
+          cd build/artifacts
+          mkdir -p verify && tar xzf ${APP_NAME}.tar.gz -C verify
+
+          docker cp verify/${APP_NAME} nc-verify:/var/www/html/custom_apps/
+          docker exec nc-verify chown -R www-data:www-data /var/www/html/custom_apps/${APP_NAME}
+
+          OUTPUT=$(docker exec -u www-data nc-verify php occ integrity:check-app ${APP_NAME} 2>&1)
+          rm -rf verify
+          if [ -n "$OUTPUT" ]; then
+            echo "Integrity check failed on the signed tarball:"
+            echo "$OUTPUT"
+            exit 1
+          fi
+          echo "Integrity check passed."
 
       - name: Attach signed tarball to release
         uses: softprops/action-gh-release@v2
