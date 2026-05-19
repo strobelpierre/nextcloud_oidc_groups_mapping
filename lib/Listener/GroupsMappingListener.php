@@ -53,7 +53,18 @@ class GroupsMappingListener implements IEventListener {
 			'count' => count($result),
 		]);
 
-		$event->setValue(json_encode(array_values($result)));
+		$values = array_values($result);
+		if ($this->mappingService->isPreserveDisplayName()) {
+			// Emit objects with only `gid` so user_oidc skips setDisplayName()
+			// and keeps the existing display name of pre-existing groups.
+			// See ProvisioningService in user_oidc: when an item is an object
+			// without a `displayName` field, the rename branch is skipped.
+			$payload = array_map(static fn (string $gid) => ['gid' => $gid], $values);
+		} else {
+			$payload = $values;
+		}
+
+		$event->setValue(json_encode($payload));
 		$event->stopPropagation();
 	}
 }

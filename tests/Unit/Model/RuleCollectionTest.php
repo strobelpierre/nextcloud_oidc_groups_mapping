@@ -151,4 +151,33 @@ class RuleCollectionTest extends TestCase {
 		$this->assertSame('additive', $decoded['mode']);
 		$this->assertCount(1, $decoded['rules']);
 	}
+
+	public function testDefaultPreserveDisplayNameIsFalse(): void {
+		$this->assertFalse(RuleCollection::fromJson('')->isPreserveDisplayName());
+		$this->assertFalse(RuleCollection::fromJson('{"version":1,"mode":"additive","rules":[]}')->isPreserveDisplayName());
+	}
+
+	public function testFromJsonWithPreserveDisplayNameTrue(): void {
+		$json = json_encode([
+			'version' => 1,
+			'mode' => 'additive',
+			'preserveDisplayName' => true,
+			'rules' => [],
+		]);
+		$collection = RuleCollection::fromJson($json);
+		$this->assertTrue($collection->isPreserveDisplayName());
+	}
+
+	public function testToJsonIncludesPreserveDisplayName(): void {
+		$json = json_encode([
+			'version' => 1,
+			'mode' => 'replace',
+			'preserveDisplayName' => true,
+			'rules' => [],
+		]);
+		$collection = RuleCollection::fromJson($json);
+		$decoded = json_decode($collection->toJson(), true);
+		$this->assertArrayHasKey('preserveDisplayName', $decoded);
+		$this->assertTrue($decoded['preserveDisplayName']);
+	}
 }

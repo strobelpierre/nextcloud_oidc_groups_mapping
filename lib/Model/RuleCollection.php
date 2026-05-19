@@ -17,18 +17,19 @@ class RuleCollection {
 	private function __construct(
 		private int $version,
 		private string $mode,
+		private bool $preserveDisplayName,
 		private array $rules,
 	) {
 	}
 
 	public static function fromJson(string $json): self {
 		if ($json === '') {
-			return new self(1, 'additive', []);
+			return new self(1, 'additive', false, []);
 		}
 
 		$data = json_decode($json, true);
 		if (!is_array($data)) {
-			return new self(1, 'additive', []);
+			return new self(1, 'additive', false, []);
 		}
 
 		$rules = [];
@@ -44,6 +45,7 @@ class RuleCollection {
 		return new self(
 			$data['version'] ?? 1,
 			$data['mode'] ?? 'additive',
+			(bool)($data['preserveDisplayName'] ?? false),
 			$rules,
 		);
 	}
@@ -69,6 +71,10 @@ class RuleCollection {
 		return $this->mode;
 	}
 
+	public function isPreserveDisplayName(): bool {
+		return $this->preserveDisplayName;
+	}
+
 	public function getVersion(): int {
 		return $this->version;
 	}
@@ -77,6 +83,7 @@ class RuleCollection {
 		return (string)json_encode([
 			'version' => $this->version,
 			'mode' => $this->mode,
+			'preserveDisplayName' => $this->preserveDisplayName,
 			'rules' => array_map(fn (Rule $r) => $r->toArray(), $this->rules),
 		], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 	}

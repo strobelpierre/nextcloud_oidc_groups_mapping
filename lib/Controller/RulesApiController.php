@@ -37,6 +37,7 @@ class RulesApiController extends OCSController {
 		return new DataResponse([
 			'version' => $collection->getVersion(),
 			'mode' => $collection->getMode(),
+			'preserveDisplayName' => $collection->isPreserveDisplayName(),
 			'rules' => array_map(fn ($r) => $r->toArray(), $collection->getRules()),
 		]);
 	}
@@ -61,6 +62,7 @@ class RulesApiController extends OCSController {
 		return new DataResponse([
 			'version' => $collection->getVersion(),
 			'mode' => $collection->getMode(),
+			'preserveDisplayName' => $collection->isPreserveDisplayName(),
 			'rules' => array_map(fn ($r) => $r->toArray(), $collection->getRules()),
 			'rules_count' => count($collection->getRules()),
 			'enabled_count' => count($collection->getEnabledRules()),

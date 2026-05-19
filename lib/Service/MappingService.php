@@ -23,6 +23,16 @@ class MappingService {
 	}
 
 	/**
+	 * Returns true if the plugin is configured to preserve existing group
+	 * display names (emit {gid} objects instead of plain strings, so user_oidc
+	 * does not call setDisplayName on the resolved group).
+	 */
+	public function isPreserveDisplayName(): bool {
+		$json = $this->appConfig->getValueString('oidc_groups_mapping', 'mapping_rules', '');
+		return RuleCollection::fromJson($json)->isPreserveDisplayName();
+	}
+
+	/**
 	 * Process claims and produce group list.
 	 *
 	 * @param object $claims The OIDC token claims

@@ -11,7 +11,7 @@
 [![REUSE](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/reuse.yml/badge.svg)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/actions/workflows/reuse.yml)
 [![Latest Release](https://img.shields.io/github/v/release/strobelpierre/nextcloud_oidc_groups_mapping?label=release)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/releases/latest)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-![Nextcloud: 29-32](https://img.shields.io/badge/Nextcloud-29--32-blue?logo=nextcloud)
+![Nextcloud: 29-33](https://img.shields.io/badge/Nextcloud-29--33-blue?logo=nextcloud)
 ![PHP: 8.1+](https://img.shields.io/badge/PHP-8.1%2B-purple?logo=php)
 [![GitHub Stars](https://img.shields.io/github/stars/strobelpierre/nextcloud_oidc_groups_mapping)](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping)
 
@@ -26,6 +26,7 @@ A Nextcloud app that maps **multiple** OIDC token claims to Nextcloud groups via
 - **5 rule types** — direct, prefix, map, conditional, template
 - **Dot-notation claim paths** — access any nested token field
 - **Additive or replace mode** — merge with or override existing groups
+- **Preserve display name** — opt-in mode that keeps custom group display names intact across logins (useful when admins rename groups in Nextcloud after creation)
 - **REST API** — manage rules programmatically via OCS endpoints
 - **OCC commands** — list, set, and test rules from the CLI
 - **Dark mode** — full support for Nextcloud dark and light themes
@@ -76,7 +77,7 @@ With `user_oidc` alone, you can map **one** claim to groups (`mappingGroups`). B
 
 ## Requirements
 
-- **Nextcloud** 29 -- 32
+- **Nextcloud** 29 -- 33
 - **PHP** 8.1+
 - **[user_oidc](https://github.com/nextcloud/user_oidc)** app installed and enabled
 
@@ -179,6 +180,25 @@ Rules are stored as JSON in `IAppConfig`. You can configure them via **Admin Set
 |:---|:---|
 | `additive` (default) | Rule-produced groups are **merged** with existing groups from `mappingGroups` |
 | `replace` | Only rule-produced groups are kept. If rules produce nothing, falls back to existing groups (safety net) |
+
+### Preserve display name
+
+By default, `user_oidc` overwrites a group's display name with its `gid` on every login. This means that if you rename a group in Nextcloud (admin UI, `occ group:rename`, or the API), the change is reverted the next time the user logs in via OIDC.
+
+Set `preserveDisplayName: true` at the top of the rule collection to opt out:
+
+```json
+{
+  "version": 1,
+  "mode": "additive",
+  "preserveDisplayName": true,
+  "rules": [ /* ... */ ]
+}
+```
+
+When enabled, the listener emits `[{"gid": "..."}]` objects instead of plain `gid` strings. `user_oidc` detects the missing `displayName` field and skips its rename call, so any custom display name set in Nextcloud sticks across logins.
+
+The toggle is also available as a checkbox in the admin UI next to the mode selector. Default is `false` to preserve the legacy behaviour for existing installations.
 
 ### Claim paths
 
