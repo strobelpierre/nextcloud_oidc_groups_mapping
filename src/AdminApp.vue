@@ -23,9 +23,11 @@
 		<!-- Visual editor tab -->
 		<template v-if="tab === 'visual'">
 			<ModeSelector :mode="mode"
+				:preserve-display-name="preserveDisplayName"
 				:rules-count="rules.length"
 				:enabled-count="enabledCount"
-				@update:mode="onModeChange" />
+				@update:mode="onModeChange"
+				@update:preserve-display-name="onPreserveDisplayNameChange" />
 
 			<RuleList :rules="rules"
 				@toggle="onToggleRule"
@@ -59,6 +61,7 @@
 		<JsonFallback v-if="tab === 'json'"
 			:rules="rules"
 			:mode="mode"
+			:preserve-display-name="preserveDisplayName"
 			@saved="onJsonSaved" />
 
 		<!-- Simulator tab -->
@@ -113,6 +116,7 @@ export default {
 		return {
 			tab: 'visual',
 			mode: parsed.mode || loadState('oidc_groups_mapping', 'mode', 'additive'),
+			preserveDisplayName: parsed.preserveDisplayName ?? loadState('oidc_groups_mapping', 'preserveDisplayName', false),
 			rules: parsed.rules || [],
 			dirty: false,
 			saving: false,
@@ -156,6 +160,10 @@ export default {
 		},
 		onModeChange(newMode) {
 			this.mode = newMode
+			this.dirty = true
+		},
+		onPreserveDisplayNameChange(newValue) {
+			this.preserveDisplayName = newValue
 			this.dirty = true
 		},
 		onToggleRule(index) {
@@ -226,6 +234,9 @@ export default {
 		onJsonSaved(data) {
 			this.rules = data.rules || this.rules
 			this.mode = data.mode || this.mode
+			if (typeof data.preserveDisplayName === 'boolean') {
+				this.preserveDisplayName = data.preserveDisplayName
+			}
 			this.dirty = false
 			showSuccess('Rules saved successfully')
 		},
@@ -238,6 +249,7 @@ export default {
 			const payload = JSON.stringify({
 				version: 1,
 				mode: this.mode,
+				preserveDisplayName: this.preserveDisplayName,
 				rules: this.rules,
 			})
 
@@ -248,6 +260,9 @@ export default {
 
 				this.rules = data.rules || this.rules
 				this.mode = data.mode || this.mode
+				if (typeof data.preserveDisplayName === 'boolean') {
+					this.preserveDisplayName = data.preserveDisplayName
+				}
 				this.dirty = false
 				const count = data.enabled_count ?? this.enabledCount
 				const total = data.rules_count ?? this.rules.length

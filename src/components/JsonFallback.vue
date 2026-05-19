@@ -46,9 +46,18 @@ export default {
 			type: String,
 			required: true,
 		},
+		preserveDisplayName: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data() {
-		const initial = JSON.stringify({ version: 1, mode: this.mode, rules: this.rules }, null, 2)
+		const initial = JSON.stringify({
+			version: 1,
+			mode: this.mode,
+			preserveDisplayName: this.preserveDisplayName,
+			rules: this.rules,
+		}, null, 2)
 		return {
 			jsonText: initial,
 			savedText: initial,
@@ -81,11 +90,19 @@ export default {
 		mode() {
 			this.syncFromProps()
 		},
+		preserveDisplayName() {
+			this.syncFromProps()
+		},
 	},
 	methods: {
 		syncFromProps() {
 			if (!this.dirty) {
-				const text = JSON.stringify({ version: 1, mode: this.mode, rules: this.rules }, null, 2)
+				const text = JSON.stringify({
+					version: 1,
+					mode: this.mode,
+					preserveDisplayName: this.preserveDisplayName,
+					rules: this.rules,
+				}, null, 2)
 				this.jsonText = text
 				this.savedText = text
 			}

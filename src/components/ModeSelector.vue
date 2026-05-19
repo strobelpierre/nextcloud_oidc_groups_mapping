@@ -5,12 +5,26 @@
 
 <template>
 	<div class="mode-selector">
-		<label class="mode-label" for="ogm-mode">Mode:</label>
-		<select id="ogm-mode" :value="mode" class="mode-select" @change="$emit('update:mode', $event.target.value)">
-			<option value="additive">additive</option>
-			<option value="replace">replace</option>
-		</select>
-		<span class="badge badge-count">{{ enabledCount }} / {{ rulesCount }} rules active</span>
+		<div class="mode-selector__row">
+			<label class="mode-label" for="ogm-mode">Mode:</label>
+			<select id="ogm-mode" :value="mode" class="mode-select" @change="$emit('update:mode', $event.target.value)">
+				<option value="additive">additive</option>
+				<option value="replace">replace</option>
+			</select>
+			<span class="badge badge-count">{{ enabledCount }} / {{ rulesCount }} rules active</span>
+		</div>
+		<div class="mode-selector__row preserve-row">
+			<input id="ogm-preserve"
+				type="checkbox"
+				:checked="preserveDisplayName"
+				@change="$emit('update:preserveDisplayName', $event.target.checked)">
+			<label for="ogm-preserve" class="preserve-label">
+				Preserve existing group display names
+			</label>
+			<span class="preserve-hint">
+				Emits <code>{gid}</code> objects so user_oidc skips <code>setDisplayName</code>. Use this if you rename groups in Nextcloud after creation.
+			</span>
+		</div>
 	</div>
 </template>
 
@@ -21,6 +35,10 @@ export default {
 		mode: {
 			type: String,
 			required: true,
+		},
+		preserveDisplayName: {
+			type: Boolean,
+			default: false,
 		},
 		rulesCount: {
 			type: Number,
@@ -37,9 +55,38 @@ export default {
 <style scoped>
 .mode-selector {
 	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.mode-selector__row {
+	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin-bottom: 16px;
+}
+
+.preserve-row {
+	font-size: 13px;
+}
+
+.preserve-label {
+	font-weight: 600;
+	color: var(--color-main-text);
+	cursor: pointer;
+}
+
+.preserve-hint {
+	color: var(--color-text-maxcontrast);
+	font-size: 12px;
+}
+
+.preserve-hint code {
+	font-family: monospace;
+	font-size: 11px;
+	background: var(--color-background-dark);
+	padding: 1px 4px;
+	border-radius: 3px;
 }
 
 .mode-label {

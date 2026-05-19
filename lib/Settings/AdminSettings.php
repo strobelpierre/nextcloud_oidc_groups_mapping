@@ -32,6 +32,7 @@ class AdminSettings implements ISettings {
 
 		$this->initialState->provideInitialState('rules', $collection->toJson());
 		$this->initialState->provideInitialState('mode', $collection->getMode());
+		$this->initialState->provideInitialState('preserveDisplayName', $collection->isPreserveDisplayName());
 
 		return new TemplateResponse('oidc_groups_mapping', 'admin', []);
 	}

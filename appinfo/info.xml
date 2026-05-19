@@ -29,7 +29,7 @@ Requires user_oidc to be installed and enabled.
     <bugs>https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/issues</bugs>
     <repository type="git">https://github.com/strobelpierre/nextcloud_oidc_groups_mapping</repository>
     <dependencies>
-        <nextcloud min-version="29" max-version="32"/>
+        <nextcloud min-version="29" max-version="33"/>
         <php min-version="8.1"/>
     </dependencies>
     <types>

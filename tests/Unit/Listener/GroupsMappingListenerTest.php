@@ -124,4 +124,32 @@ class GroupsMappingListenerTest extends TestCase {
 		$this->listener->handle($event);
 		$this->assertSame('["IT"]', $event->getValue());
 	}
+
+	public function testEmitsStringsByDefault(): void {
+		$claims = (object)['department' => 'IT'];
+		$event = new AttributeMappedEvent('mappingGroups', $claims, '[]');
+
+		$this->mappingService->method('process')->willReturn(['groupA', 'groupB']);
+		$this->mappingService->method('isPreserveDisplayName')->willReturn(false);
+
+		$this->listener->handle($event);
+
+		// Default: plain strings (legacy behaviour, user_oidc will set displayName=gid)
+		$decoded = json_decode($event->getValue(), true);
+		$this->assertSame(['groupA', 'groupB'], $decoded);
+	}
+
+	public function testEmitsObjectsWhenPreserveDisplayNameEnabled(): void {
+		$claims = (object)['department' => 'IT'];
+		$event = new AttributeMappedEvent('mappingGroups', $claims, '[]');
+
+		$this->mappingService->method('process')->willReturn(['groupA', 'groupB']);
+		$this->mappingService->method('isPreserveDisplayName')->willReturn(true);
+
+		$this->listener->handle($event);
+
+		// With preserve mode: emit {gid} objects so user_oidc skips setDisplayName()
+		$decoded = json_decode($event->getValue(), true);
+		$this->assertSame([['gid' => 'groupA'], ['gid' => 'groupB']], $decoded);
+	}
 }
