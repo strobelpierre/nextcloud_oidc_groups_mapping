@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.2.0](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.1.1...v1.2.0) (2026-05-19)
+
+
+### Features
+
+* add preserveDisplayName mode + bump max-version to NC 33 ([2133845](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/21338453c30f9c41add61293b28960761e7d272d)), closes [#3](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/issues/3)
+
 ## [1.1.1](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.1.0...v1.1.1) (2026-05-13)
 
 
