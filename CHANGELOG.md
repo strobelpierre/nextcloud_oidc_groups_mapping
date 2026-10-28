@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.3.0](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.2.0...v1.3.0) (2026-10-28)
+
+
+### Features
+
+* support Nextcloud 34 and 35 ([a5c56cd](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/a5c56cd8e235e65a9cdde031b22842e7c6e878f3)), closes [#7](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/issues/7)
+
 ## [1.2.0](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.1.1...v1.2.0) (2026-05-19)
 
 
