@@ -9,25 +9,35 @@
     <name>OIDC Groups Mapping</name>
     <summary>Map OIDC token claims to Nextcloud groups with a visual rule editor</summary>
     <description><![CDATA[
-Map multiple OIDC token claims to Nextcloud groups using configurable rules.
+Decide which Nextcloud groups a user lands in, based on the claims their identity provider puts in the token.
 
-**Admin UI** — visual rule editor with drag-and-drop reorder, raw JSON editor, and claim simulator.
-**5 rule types** — direct, prefix, map, conditional, template.
-**REST API** — manage rules programmatically via OCS endpoints.
-**OCC commands** — list, set, and test rules from the CLI.
-**Dark mode** — full support for Nextcloud dark and light themes.
+## Features
 
-Works with any identity provider through the user_oidc app.
-Requires user_oidc to be installed and enabled.
+- **Visual rule editor** — build and reorder rules by drag-and-drop in the admin settings. No JSON required.
+- **Five rule types** — direct, prefix, map, conditional and template, applied in the order you choose.
+- **Claim simulator** — paste a sample token payload and see exactly which groups come out, and which rule produced each one.
+- **Raw JSON editor** — for when you would rather edit the whole configuration at once.
+- **Additive or authoritative mode** — add to what the user already has, or let the token define the full membership.
+- **REST API and OCC commands** — read, write and test rules from scripts or the command line.
+- **Preserve display names** — keep the names of groups you renamed in Nextcloud after they were created.
+- **Dark mode** — follows the Nextcloud theme.
+
+Works with any identity provider through the user_oidc app, which must be installed and enabled.
     ]]></description>
     <version>1.3.0</version>
     <licence>agpl</licence>
     <author>Pierre Strobel</author>
     <namespace>OidcGroupsMapping</namespace>
+    <documentation>
+        <admin>https://github.com/strobelpierre/nextcloud_oidc_groups_mapping#configuration</admin>
+    </documentation>
     <category>integration</category>
     <website>https://github.com/strobelpierre/nextcloud_oidc_groups_mapping</website>
     <bugs>https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/issues</bugs>
     <repository type="git">https://github.com/strobelpierre/nextcloud_oidc_groups_mapping</repository>
+    <screenshot>https://raw.githubusercontent.com/strobelpierre/nextcloud_oidc_groups_mapping/main/screenshots/01-visual-editor.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/strobelpierre/nextcloud_oidc_groups_mapping/main/screenshots/03-claim-simulator.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/strobelpierre/nextcloud_oidc_groups_mapping/main/screenshots/02-json-editor.png</screenshot>
     <dependencies>
         <nextcloud min-version="29" max-version="35"/>
         <php min-version="8.1"/>
