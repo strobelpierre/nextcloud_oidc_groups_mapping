@@ -12,18 +12,29 @@ on:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    name: Psalm static analysis
+    strategy:
+      # Without this, one leg failing cancels the other and its result is lost.
+      fail-fast: false
+      matrix:
+        # The PHP version is tied to the OCP branch: the NC 35 stubs require
+        # php ~8.3 || ~8.4 || ~8.5, so they cannot be analysed on 8.2.
+        include:
+          - ocp: 'dev-stable29'
+            php: '8.2'
+          - ocp: 'dev-stable35'
+            php: '8.3'
+    name: Psalm static analysis (OCP ${{ matrix.ocp }})
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           coverage: none
 
       - name: Install dependencies
-        run: composer update --no-interaction --prefer-dist
+        run: composer require --dev --no-interaction --prefer-dist -W "nextcloud/ocp:${{ matrix.ocp }}"
 
       - name: Run Psalm
         run: composer psalm
