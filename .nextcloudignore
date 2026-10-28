@@ -23,6 +23,7 @@ Makefile
 *.crt
 build
 docs
+screenshots
 CONTRIBUTING.md
 SECURITY.md
 commitlint.config.js

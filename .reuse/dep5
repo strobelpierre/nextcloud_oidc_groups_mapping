@@ -22,6 +22,10 @@ Files: CONTRIBUTING.md SECURITY.md .github/ISSUE_TEMPLATE/* .github/PULL_REQUEST
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: AGPL-3.0-or-later
 
+Files: screenshots/*
+Copyright: 2026 OIDC Groups Mapping Contributors
+License: CC-BY-SA-4.0
+
 Files: docs/flow-diagram.svg docs/screenshots/admin-ui.svg
 Copyright: 2026 OIDC Groups Mapping Contributors
 License: CC-BY-SA-4.0
