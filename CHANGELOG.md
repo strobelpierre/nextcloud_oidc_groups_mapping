@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.3.1](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.3.0...v1.3.1) (2026-10-28)
+
+
+### Features
+
+* **store:** add an app icon, real screenshots and a richer description ([592041a](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/commit/592041a97dcb47f0a0cf9fd086b6eb04ffd97a74))
+
 ## [1.3.0](https://github.com/strobelpierre/nextcloud_oidc_groups_mapping/compare/v1.2.0...v1.3.0) (2026-10-28)
 
 
