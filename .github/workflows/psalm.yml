@@ -12,7 +12,10 @@ on:
 jobs:
   psalm:
     runs-on: ubuntu-latest
-    name: Psalm static analysis
+    strategy:
+      matrix:
+        ocp: ['dev-stable29', 'dev-stable35']
+    name: Psalm static analysis (OCP ${{ matrix.ocp }})
     steps:
       - uses: actions/checkout@v4
 
@@ -23,7 +26,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer update --no-interaction --prefer-dist
+        run: composer require --dev --no-interaction --prefer-dist -W "nextcloud/ocp:${{ matrix.ocp }}"
 
       - name: Run Psalm
         run: composer psalm
